@@ -13,20 +13,38 @@ func (s *Server) registerPublicImages() {
 		return &PublicStream{Protocol: "image", Produce: func(ctx context.Context, emit func(Map) error) error {
 			emitted := 0
 			var sendErr error
-			_, err := s.Images.Execute(ctx, payload, nil, func(items []Map) {
+			result, err := s.Images.Execute(ctx, payload, nil, func(items []Map) {
 				if sendErr != nil {
 					return
 				}
 				for ; emitted < len(items); emitted++ {
 					item := items[emitted]
-					if text(item["b64_json"]) == "" {
+					if text(item["b64_json"]) == "" && text(item["url"]) == "" {
 						continue
 					}
-					sendErr = emit(Map{"type": prefix + ".completed", "b64_json": item["b64_json"], "usage": publicTokenUsage(countPublicTextTokens(publicString(payload["prompt"]), publicString(payload["model"])), publicInputImageTokens(imageInputs(payload["images"])), 0, countOutputImageTokens([]Map{item}, publicString(payload["size"]), publicString(payload["quality"])))})
+					event := Map{
+						"type":            prefix + ".completed",
+						"usage":           publicTokenUsage(countPublicTextTokens(publicString(payload["prompt"]), publicString(payload["model"])), publicInputImageTokens(imageInputs(payload["images"])), 0, countOutputImageTokens([]Map{item}, publicString(payload["size"]), publicString(payload["quality"]))),
+						"_image_metadata": []Map{{"width": item["width"], "height": item["height"]}},
+					}
+					for _, field := range []string{"b64_json", "url"} {
+						if text(item[field]) != "" {
+							event[field] = item[field]
+						}
+					}
+					sendErr = emit(event)
 					if sendErr != nil {
 						return
 					}
 				}
+			})
+			// Image payloads were already counted by the emitted events.
+			observePublicResult(ctx, Map{
+				"_conversation_id":     result["_conversation_id"],
+				"_account_email":       result["_account_email"],
+				"_upstream_account_id": result["_upstream_account_id"],
+				"_image_attempts":      result["_image_attempts"],
+				"_image_urls":          result["_image_urls"],
 			})
 			if sendErr != nil {
 				return sendErr
@@ -71,6 +89,7 @@ func (s *Server) registerPublicImages() {
 			writePublicError(w, r, problem(503, "server is shutting down"))
 			return
 		}
+		ctx = context.WithValue(ctx, publicCallContextKey{}, call)
 		if err = s.checkContent(ctx, payload["prompt"]); err != nil {
 			_ = call.Finish(nil, err)
 			writePublicError(w, r, err)

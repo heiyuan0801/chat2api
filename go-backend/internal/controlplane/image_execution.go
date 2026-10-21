@@ -83,8 +83,11 @@ func classifyExecutionError(err error) *ImageExecutionError {
 	if errors.As(err, &known) {
 		return known
 	}
-	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+	if errors.Is(err, context.Canceled) {
 		return imageProblem("task_interrupted", 0, "", nil)
+	}
+	if errors.Is(err, context.DeadlineExceeded) {
+		return imageProblem("image_poll_timeout", 0, "", nil)
 	}
 	var pool *PoolError
 	if errors.As(err, &pool) {
@@ -93,7 +96,7 @@ func classifyExecutionError(err error) *ImageExecutionError {
 			code = "insufficient_quota"
 		}
 		if pool.Kind == "deadline_exceeded" {
-			code = "task_interrupted"
+			code = "image_poll_timeout"
 		}
 		return imageProblem(code, 0, "", nil)
 	}
@@ -413,15 +416,29 @@ func (e *NativeImageExecutor) Execute(parent context.Context, payload Map, progr
 	attempts := []Map{}
 	conversation, email, originAccountID := "", "", ""
 	var selected *ImageExecutionError
+	var deadlineErr error
+	requestDone := ctx.Done()
+	var settle <-chan time.Time
 collect:
-	for range n {
+	for remaining := n; remaining > 0; {
 		var completed completed
 		select {
 		case completed = <-done:
-		case <-ctx.Done():
-			if len(data) == 0 {
-				return nil, classifyExecutionError(ctx.Err())
+			remaining--
+		case <-requestDone:
+			deadlineErr = ctx.Err()
+			if !errors.Is(deadlineErr, context.DeadlineExceeded) {
+				break collect
 			}
+			// Cancelled upstream workers return the originating conversation and
+			// account with their final error. Collect that proof for bounded time
+			// after a deadline; an explicit caller cancellation still exits now.
+			requestDone = nil
+			timer := time.NewTimer(5 * time.Second)
+			defer timer.Stop()
+			settle = timer.C
+			continue
+		case <-settle:
 			break collect
 		}
 		if completed.err != nil {
@@ -465,6 +482,9 @@ collect:
 			selected.Details["image_attempts"] = attempts
 			return nil, selected
 		}
+		if deadlineErr != nil {
+			return nil, classifyExecutionError(deadlineErr)
+		}
 		return nil, imageProblem("no_image_generated", 0, "image generation completed without output", nil)
 	}
 	// A request-level text/policy outcome outranks earlier image outputs, matching
@@ -489,7 +509,7 @@ collect:
 	if len(attempts) > 0 {
 		result["_image_attempts"] = attempts
 	}
-	observeImageIdentity(ctx, conversation, email)
+	observeImageIdentity(ctx, conversation, email, originAccountID)
 	return result, nil
 }
 func (e *NativeImageExecutor) one(ctx context.Context, request upstream.ImageRequest, pool PoolRequest, payload, settings Map, progress func(string)) (Map, error) {
@@ -712,7 +732,7 @@ func (e *NativeImageExecutor) Resume(parent context.Context, conversation string
 		partial(mapSlice(out["data"]))
 	}
 	out["_upstream_account_id"], out["_account_email"], out["_conversation_id"] = accountID, origin.email, conversation
-	observeImageIdentity(ctx, conversation, origin.email)
+	observeImageIdentity(ctx, conversation, origin.email, accountID)
 	return out, nil
 }
 func (a *Accounts) recordImageOutcome(ctx context.Context, snapshot Map, success, consumed bool, failure *ImageExecutionError) error {
@@ -814,9 +834,9 @@ func (e *NativeImageExecutor) Close(ctx context.Context) error {
 	}
 }
 
-func observeImageIdentity(ctx context.Context, conversation, email string) {
+func observeImageIdentity(ctx context.Context, conversation, email, accountID string) {
 	if call, ok := ctx.Value(publicCallContextKey{}).(*CallRecorder); ok {
-		call.Observe(Map{"_conversation_id": conversation, "_account_email": email})
+		call.Observe(Map{"_conversation_id": conversation, "_account_email": email, "_upstream_account_id": accountID})
 	}
 }
 
@@ -844,6 +864,13 @@ func (e *NativeImageExecutor) legacyImageOrigin(ctx context.Context, owner, conv
 	for _, record := range records.Items {
 		detail := object(record["detail"])
 		if text(detail["key_id"]) != owner || text(detail["conversation_id"]) != conversation {
+			continue
+		}
+		if accountID := text(detail["upstream_account_id"]); accountID != "" {
+			if byID(accounts, accountID) == nil {
+				return unavailable()
+			}
+			origins[accountID] = true
 			continue
 		}
 		emails := []string{}

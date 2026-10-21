@@ -276,7 +276,7 @@ func monitorDiagnostic(row Map, events []Map) Map {
 		for _, event := range events {
 			item := Map{}
 			for key, value := range event {
-				if monitorHas(monitorSpec["CANONICAL_FAILURE_FIELDS"], key) || monitorHas(monitorSpec["RAW_DIAGNOSTIC_FIELDS"], key) || monitorHas([]string{"time", "event", "label", "index", "total", "attempt", "status", "public_error", "account_failure", "switched_account"}, key) || (strings.HasSuffix(key, "_ms") && monitorInt(value) > 0) {
+				if monitorHas(monitorSpec["CANONICAL_FAILURE_FIELDS"], key) || monitorHas(monitorSpec["RAW_DIAGNOSTIC_FIELDS"], key) || monitorHas([]string{"time", "event", "label", "index", "total", "attempt", "status", "public_error", "account_failure", "switched_account", "local_reason"}, key) || (strings.HasSuffix(key, "_ms") && monitorInt(value) > 0) {
 					item[key] = value
 				}
 			}

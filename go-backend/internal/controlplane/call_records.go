@@ -152,7 +152,7 @@ func (c *CallRecorder) observe(value any) {
 	}
 	switch v := value.(type) {
 	case map[string]any:
-		for _, key := range []string{"_account_email", "account_email", "_conversation_id", "conversation_id"} {
+		for _, key := range []string{"_account_email", "account_email", "_conversation_id", "conversation_id", "_upstream_account_id"} {
 			if x := text(v[key]); x != "" {
 				target := strings.TrimPrefix(key, "_")
 				if text(c.detail[target]) == "" {
@@ -302,8 +302,13 @@ func (c *CallRecorder) Finish(result any, executionErr error) error {
 				}
 				if v := text(imageErr.Details["conversation_id"]); v != "" {
 					detail["conversation_id"] = safeCallText(v, 255)
-					if imageErr.origin.conversationID == v && imageErr.origin.email != "" {
-						detail["account_email"] = safeCallText(imageErr.origin.email, 320)
+					if imageErr.origin.conversationID == v {
+						if imageErr.origin.email != "" {
+							detail["account_email"] = safeCallText(imageErr.origin.email, 320)
+						}
+						if imageErr.origin.accountID != "" {
+							detail["upstream_account_id"] = safeCallText(imageErr.origin.accountID, 255)
+						}
 					}
 				}
 				for _, attempt := range dicts(imageErr.Details["image_attempts"]) {
@@ -410,5 +415,46 @@ func (c *CallRecorder) Stage(event string, data Map) {
 func recordPublicStage(ctx context.Context, event string, data Map) {
 	if c, ok := ctx.Value(publicCallContextKey{}).(*CallRecorder); ok {
 		c.Stage(event, data)
+	}
+}
+
+// Account admission diagnostics belong to the final Call Record, independently
+// of the monitor's shorter event window. Only stable IDs and fixed reasons enter
+// the bounded sample; credentials and upstream response text are never retained.
+func recordAccountSelection(ctx context.Context, event, accountID, reason string, elapsed time.Duration) {
+	c, ok := ctx.Value(publicCallContextKey{}).(*CallRecorder)
+	if !ok || c == nil {
+		return
+	}
+	c.mu.Lock()
+	detail := object(c.detail["account_selection"])
+	switch event {
+	case "checked":
+		detail["checked"] = integer(detail["checked"], 0) + 1
+	case "skipped":
+		detail["skipped"] = integer(detail["skipped"], 0) + 1
+		reasons := object(detail["skip_reasons"])
+		reasons[reason] = integer(reasons[reason], 0) + 1
+		detail["skip_reasons"] = reasons
+		samples := dicts(detail["skips"])
+		if len(samples) < 100 {
+			detail["skips"] = append(samples, Map{"upstream_account_id": accountID, "reason": reason})
+		} else {
+			detail["skips_truncated"] = integer(detail["skips_truncated"], 0) + 1
+		}
+	case "waiting":
+		detail["wait_count"] = integer(detail["wait_count"], 0) + 1
+		detail["last_wait_reason"] = reason
+	case "finished":
+		detail["selection_ms"] = integer(detail["selection_ms"], 0) + max(0, int(elapsed.Milliseconds()))
+		detail["stop_reason"] = reason
+	}
+	c.detail["account_selection"] = detail
+	c.mu.Unlock()
+	if event == "skipped" || event == "waiting" {
+		if accountID != "" {
+			reason += " [" + accountID + "]"
+		}
+		c.Stage("image_getting_account", monitorImageData(ctx, Map{"local_reason": reason}))
 	}
 }

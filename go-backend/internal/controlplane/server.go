@@ -353,12 +353,8 @@ func (s *Server) route(method, path, access, model string, fn endpoint) {
 		}
 		ctx, cancel := context.WithTimeout(r.Context(), time.Hour)
 		defer cancel()
-		body, e := decodeRequest(w, r, model)
-		if e != nil {
-			writeError(w, e)
-			return
-		}
 		var identity Map
+		var e error
 		if access != "public" {
 			identity, e = s.Auth.Identity(ctx, r.Header.Get("Authorization"))
 			if e != nil {
@@ -373,6 +369,11 @@ func (s *Server) route(method, path, access, model string, fn endpoint) {
 				writeError(w, problem(403, "需要管理员权限才能执行这个操作"))
 				return
 			}
+		}
+		body, e := decodeRequest(w, r, model)
+		if e != nil {
+			writeError(w, e)
+			return
 		}
 		value, e := fn(ctx, r, body, identity)
 		if e != nil {

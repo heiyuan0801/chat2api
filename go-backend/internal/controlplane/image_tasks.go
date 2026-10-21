@@ -739,7 +739,7 @@ func (t *ImageTasks) finish(job imageTaskJob, result Map, err error) error {
 				}
 			}
 		}
-		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		if errors.Is(err, context.Canceled) {
 			updates["error_code"] = "task_interrupted"
 			updates["status_code"] = 503
 		}

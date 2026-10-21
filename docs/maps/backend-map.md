@@ -10,6 +10,9 @@ The [release runbook](../runbooks/go-release.md) owns those commands and limits.
 
 The backend exposes stable JSON projections and action results. It does not
 render product HTML or transfer browser interaction ownership to Python.
+Go protected routes authenticate before decoding request bodies. Public image
+generation and edit SSE adapters emit either base64 or URL completion events and
+consume execution metadata before removing internal identity fields.
 
 ## Entry points
 
@@ -100,6 +103,12 @@ terminal tool-failure cooldown. `upstream.WebImageRoute` owns alias normalizatio
 Metadata refresh, credential rotation and public protocol adapters do not own a
 second capability table. Structured tool errors and poll deadlines are parsed in
 the native upstream owner, and known-conversation recovery never regenerates.
+Generation admission scans without a twenty-candidate ceiling and waits for
+replenishment only within the existing execution deadline. Account notifications
+and one-second repository refreshes observe new/restored capacity. The same pool
+owns request-local failed-preflight exclusion; the Call Recorder retains bounded
+credential-free skip samples, complete reason counts and terminal selection time.
+Monitor events carry skip/wait `local_reason` through their existing stage window.
 Configured image polling reads the current conversation before diagnostic tasks.
 Committed pointers skip task probes while pending/task-only results retain their
 failure and settling rules. Fixed-name duration callbacks feed the existing
@@ -113,7 +122,11 @@ account/image-egress lease and current credentials, including quota-exhausted
 accounts; it cannot select a substitute. The native executor resolves missing
 legacy references only from owner/conversation-scoped Call Records and fails
 closed on ambiguity. The final Call Recorder consumes originating identity
-before stream projection removes internal fields. See [ADR 0010](../adr/0010-bind-image-recovery-to-origin-account.md).
+before stream projection removes internal fields. It retains the stable account
+ID as private audit metadata; legacy recovery prefers that ID over email-based
+evidence. Execution deadlines remain timeouts and collect bounded worker cleanup
+metadata, while caller cancellation remains immediate. See
+[ADR 0010](../adr/0010-bind-image-recovery-to-origin-account.md).
 
 ## Domain and persistence ownership
 

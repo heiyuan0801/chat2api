@@ -130,9 +130,16 @@ func excludedAccount(m Map, tokens []string) bool {
 	}
 	return false
 }
-func (a *Accounts) slot(ctx context.Context, r PoolRequest, attempted map[string]bool) (*AccountLease, error) {
+func imageCandidateVersion(m Map) string {
+	return digest(canonical(merge(credentialGuard(m, false), Map{"status": m["status"], "last_remote_check_result": m["last_remote_check_result"], "last_remote_checked_at": m["last_remote_checked_at"]})))
+}
+
+func (a *Accounts) slot(ctx context.Context, r PoolRequest, attempted map[string]string, skip func(Map, string)) (*AccountLease, error) {
 	for {
 		if e := ctx.Err(); e != nil {
+			if errors.Is(e, context.Canceled) {
+				return nil, e
+			}
 			return nil, &PoolError{"deadline_exceeded", 504, "image request deadline exceeded while waiting for an account slot"}
 		}
 		items, e := a.List(ctx)
@@ -148,7 +155,19 @@ func (a *Accounts) slot(ctx context.Context, r PoolRequest, attempted map[string
 		matched, limited := 0, 0
 		for _, m := range items {
 			mid := text(m["management_id"])
-			if attempted[mid] || excludedAccount(m, r.ExcludedTokens) || !matchesPool(m, r) {
+			if version, ok := attempted[mid]; ok && version == imageCandidateVersion(m) {
+				continue
+			}
+			reason := ""
+			if excludedAccount(m, r.ExcludedTokens) {
+				reason = "already_attempted"
+			} else if !matchesPool(m, r) {
+				reason = "model_filter"
+			}
+			if reason != "" {
+				if skip != nil {
+					skip(m, reason)
+				}
 				continue
 			}
 			matched++
@@ -157,6 +176,19 @@ func (a *Accounts) slot(ctx context.Context, r PoolRequest, attempted map[string
 			}
 			if imageAvailable(m, a.now()) || (r.pollOnly && selectable(m, a.now(), true, true)) {
 				ready = append(ready, m)
+			} else if skip != nil {
+				reason = "account_unavailable"
+				switch {
+				case m["status"] == "限流":
+					reason = "quota_exhausted"
+				case m["status"] == "禁用":
+					reason = "disabled"
+				case CredentialLifecycle(m, a.now())["credential_availability"] == "unavailable":
+					reason = "credentials_unavailable"
+				case m["last_remote_check_result"] == "pending":
+					reason = "remote_check_pending"
+				}
+				skip(m, reason)
 			}
 		}
 		if len(ready) == 0 {
@@ -164,6 +196,18 @@ func (a *Accounts) slot(ctx context.Context, r PoolRequest, attempted map[string
 				return nil, &PoolError{"quota_exhausted", 429, "all matched image accounts are remote-confirmed quota exhausted"}
 			}
 			return nil, &PoolError{"unavailable", 503, "no image account is ready for current model/status filters"}
+		}
+		type rejection struct {
+			account Map
+			reason  string
+		}
+		rejections := []rejection{}
+		report := func() {
+			if skip != nil {
+				for _, rejected := range rejections {
+					skip(rejected.account, rejected.reason)
+				}
+			}
 		}
 		a.mu.Lock()
 		present := map[string]bool{}
@@ -182,6 +226,7 @@ func (a *Accounts) slot(ctx context.Context, r PoolRequest, attempted map[string
 			mid := text(m["management_id"])
 			entry, known := a.imageEvidence[imageEvidenceKey{mid, r.ImageRoute}]
 			if known && !entry.proven && !r.pollOnly {
+				rejections = append(rejections, rejection{m, "route_cooldown"})
 				continue
 			}
 			eligible++
@@ -190,10 +235,13 @@ func (a *Accounts) slot(ctx context.Context, r PoolRequest, attempted map[string
 				if known && entry.proven {
 					preferred = append(preferred, m)
 				}
+			} else if skip != nil {
+				rejections = append(rejections, rejection{m, "account_busy"})
 			}
 		}
 		if eligible == 0 {
 			a.mu.Unlock()
+			report()
 			return nil, &PoolError{"unavailable", 503, "image route is temporarily unavailable after upstream tool failures"}
 		}
 		if len(preferred) > 0 {
@@ -205,6 +253,7 @@ func (a *Accounts) slot(ctx context.Context, r PoolRequest, attempted map[string
 			mid := text(m["management_id"])
 			a.inflight[mid]++
 			a.mu.Unlock()
+			report()
 			return &AccountLease{Account: m, release: func() {
 				a.mu.Lock()
 				if a.inflight[mid] <= 1 {
@@ -219,10 +268,14 @@ func (a *Accounts) slot(ctx context.Context, r PoolRequest, attempted map[string
 		}
 		changed := a.changed
 		a.mu.Unlock()
+		report()
 		timer := time.NewTimer(time.Second)
 		select {
 		case <-ctx.Done():
 			timer.Stop()
+			if errors.Is(ctx.Err(), context.Canceled) {
+				return nil, ctx.Err()
+			}
 			return nil, &PoolError{"deadline_exceeded", 504, "image request deadline exceeded while waiting for an account slot"}
 		case <-changed:
 			timer.Stop()
@@ -237,7 +290,7 @@ func (a *Accounts) AcquireImagePoll(ctx context.Context, accountID string) (*Acc
 	if strings.TrimSpace(accountID) == "" || a.maintenance == nil {
 		return nil, &PoolError{"unavailable", 503, "original image account is unavailable for polling"}
 	}
-	lease, err := a.slot(ctx, PoolRequest{accountID: accountID, pollOnly: true}, nil)
+	lease, err := a.slot(ctx, PoolRequest{accountID: accountID, pollOnly: true}, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -269,56 +322,120 @@ func (a *Accounts) AcquireImage(ctx context.Context, r PoolRequest) (*AccountLea
 	if a.maintenance == nil {
 		return nil, errors.New("account maintenance is not configured")
 	}
-	attempted := map[string]bool{}
-	sawQuota, sawUnavailable := false, false
-	for range 20 {
-		lease, e := a.slot(ctx, r, attempted)
+	started := time.Now()
+	stopReason := "selected"
+	defer func() { recordAccountSelection(ctx, "finished", "", stopReason, time.Since(started)) }()
+	attempted := map[string]string{}
+	seen := map[string]string{}
+	skip := func(account Map, reason string) {
+		mid := text(account["management_id"])
+		if seen[mid] != reason {
+			seen[mid] = reason
+			recordAccountSelection(ctx, "skipped", mid, reason, 0)
+		}
+	}
+	waitReason := ""
+	for {
+		// Capture before reading the pool so a concurrent import cannot be missed.
+		a.mu.Lock()
+		changed := a.changed
+		a.mu.Unlock()
+		lease, e := a.slot(ctx, r, attempted, skip)
 		if e != nil {
-			if len(attempted) == 0 {
-				return nil, e
-			}
 			var selection *PoolError
-			if errors.As(e, &selection) && selection.Kind == "deadline_exceeded" {
+			if !errors.As(e, &selection) || selection.Kind == "deadline_exceeded" {
+				stopReason = "selection_error"
+				if ctx.Err() != nil {
+					stopReason = ctx.Err().Error()
+				}
 				return nil, e
 			}
-			break
+			quotaOnly := false
+			for _, reason := range seen {
+				if reason == "quota_exhausted" {
+					quotaOnly = true
+				} else if reason != "model_filter" && reason != "already_attempted" {
+					quotaOnly = false
+					break
+				}
+			}
+			if selection.Kind != "quota_exhausted" && quotaOnly {
+				selection = &PoolError{"quota_exhausted", 429, "all usable image accounts remote-confirmed quota exhausted"}
+			}
+			stopReason = selection.Kind
+			if _, bounded := ctx.Deadline(); !bounded {
+				return nil, selection
+			}
+			if waitReason != selection.Message {
+				waitReason = selection.Message
+				recordAccountSelection(ctx, "waiting", "", waitReason, 0)
+			}
+			timer := time.NewTimer(time.Second)
+			select {
+			case <-ctx.Done():
+				timer.Stop()
+				stopReason = ctx.Err().Error()
+				if errors.Is(ctx.Err(), context.Canceled) {
+					return nil, ctx.Err()
+				}
+				return nil, selection
+			case <-changed:
+				timer.Stop()
+			case <-timer.C:
+			}
+			continue
 		}
 		mid := text(lease.Account["management_id"])
-		attempted[mid] = true
+		attempted[mid] = imageCandidateVersion(lease.Account)
+		recordAccountSelection(ctx, "checked", mid, "", 0)
 		current, e := a.maintenance.Preflight(ctx, mid)
 		if e != nil {
 			lease.Release()
 			if ctx.Err() != nil {
+				stopReason = ctx.Err().Error()
+				if errors.Is(ctx.Err(), context.Canceled) {
+					return nil, ctx.Err()
+				}
 				return nil, &PoolError{"deadline_exceeded", 504, "image request deadline exceeded during remote account validation"}
 			}
-			sawUnavailable = true
+			skip(lease.Account, "preflight_failed")
+			latest, lookupErr := a.Get(ctx, mid)
+			if lookupErr != nil {
+				stopReason = "selection_error"
+				return nil, lookupErr
+			}
+			if latest != nil && latest["last_remote_check_result"] != "ok" {
+				attempted[mid] = imageCandidateVersion(latest)
+			}
 			continue
+		}
+		if current != nil {
+			attempted[mid] = imageCandidateVersion(current)
 		}
 		if current != nil && imageAvailable(current, a.now()) && matchesPool(current, r) {
 			egress, e := a.proxy.Resolve(ctx, current, "", false, true, true)
 			if e != nil {
 				lease.Release()
+				stopReason = "egress_unavailable"
 				return nil, e
 			}
 			if ctx.Err() != nil {
 				egress.Release()
 				lease.Release()
+				stopReason = ctx.Err().Error()
 				return nil, ctx.Err()
 			}
 			lease.Account, lease.Egress = current, egress
+			stopReason = "selected"
 			return lease, nil
 		}
 		if current != nil && current["status"] == "限流" {
-			sawQuota = true
+			skip(lease.Account, "quota_exhausted")
 		} else {
-			sawUnavailable = true
+			skip(lease.Account, "preflight_unavailable")
 		}
 		lease.Release()
 	}
-	if sawQuota && !sawUnavailable {
-		return nil, &PoolError{"quota_exhausted", 429, "all usable image accounts remote-confirmed quota exhausted"}
-	}
-	return nil, &PoolError{"unavailable", 503, "no image account available after remote validation"}
 }
 func (a *Accounts) AcquireText(ctx context.Context, excluded []string) (*AccountLease, error) {
 	attempted := map[string]bool{}

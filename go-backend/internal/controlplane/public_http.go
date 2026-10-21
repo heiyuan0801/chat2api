@@ -109,12 +109,8 @@ func (s *Server) publicRoute(method, path, access, model string, fn endpoint) {
 				writePublicError(w, r, err)
 			}
 		}()
-		body, e := decodePublic(w, r, model)
-		if e != nil {
-			writePublicError(w, r, e)
-			return
-		}
 		var identity Map
+		var e error
 		if access != "public" {
 			auth := r.Header.Get("Authorization")
 			if path == "/v1/messages" && auth == "" && r.Header.Get("x-api-key") != "" {
@@ -125,6 +121,11 @@ func (s *Server) publicRoute(method, path, access, model string, fn endpoint) {
 				writePublicError(w, r, e)
 				return
 			}
+		}
+		body, e := decodePublic(w, r, model)
+		if e != nil {
+			writePublicError(w, r, e)
+			return
 		}
 		if method == "POST" {
 			call = s.beginPublicCall(ctx, path, body, identity)
@@ -313,7 +314,7 @@ func stripPublicInternal(value any) any {
 	}
 }
 
-var publicInternalFields = map[string]bool{"_account_email": true, "_call_error": true, "_conversation_id": true, "_call_id": true, "_call_status": true, "_image_urls": true, "_image_attempts": true, "_image_metadata": true}
+var publicInternalFields = map[string]bool{"_account_email": true, "_call_error": true, "_conversation_id": true, "_upstream_account_id": true, "_call_id": true, "_call_status": true, "_image_urls": true, "_image_attempts": true, "_image_metadata": true}
 
 type publicCallContextKey struct{}
 

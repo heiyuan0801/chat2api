@@ -23,6 +23,10 @@ text snapshots, token usage, SSE framing and terminal events follow Python
 fixtures. Text cache entries are bounded and scoped to each protocol; cache
 hits still produce a final call record. Streaming starts after the first event
 or a controlled early error and follows request/server cancellation.
+Protected Go routes authenticate before reading JSON bodies. Image generation
+and edit streams emit a `.completed` event containing `b64_json` or `url` for
+each delivered image according to `response_format`. Both paths retain execution
+stages and final audit metadata without exposing internal account references.
 
 The native Client retains explicit resource limits, including 1 MiB prompt/text
 content and 1024 messages. These limits are additional to request schema checks;
@@ -34,6 +38,17 @@ execution owner coordinates image slots, account attempts, egress leases, the
 common deadline, quota/counters, masks, output sizing and asset saving. A fallback
 proxy is eligible only for an early connection failure before a conversation;
 polling and already-started generation are never replayed through that fallback.
+
+Image admission scans candidates without a twenty-account preflight ceiling.
+Within the existing request deadline it waits for imports, restored accounts or
+released capacity; a one-second refresh also observes changes from other
+processes. Failed preflights are not repeated against unchanged account state.
+Call Record `account_selection` diagnostics retain checked/skipped counts,
+reason totals, selection time and the terminal reason. At most 100 credential-free
+stable-ID skip samples survive independently of the monitor's 60-event window.
+Actual generation attempts still obey the existing retry settings. A caller
+without a deadline keeps immediate exhaustion errors rather than waiting forever;
+origin-bound recovery continues to fail closed without a replacement account.
 
 Input references accept the existing JSON, form and multipart shapes. Remote
 images use public-address validation, pinned dialing, bounded redirects and
@@ -82,7 +97,10 @@ exhausted generation quota or tool cooldown does not block reading existing work
 Deleted, disabled or unusable accounts fail without replacement. Legacy tasks
 can recover an unambiguous origin from a bounded set of the same User Key's
 conversation Call Records; absent/conflicting evidence fails without remote
-probing. A resume's own poll deadline remains resumable; caller cancellation
+probing. New Call Records retain a private stable account ID and legacy recovery
+prefers it over email-based evidence. An execution deadline remains a timeout;
+bounded worker cleanup retains known conversation/account proof for recovery.
+A resume's own poll deadline remains resumable; caller cancellation
 remains cancellation. Python readers accept the optional task metadata, and
 existing task projection/routes and SQL schemas are unchanged.
 
