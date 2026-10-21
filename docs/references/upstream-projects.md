@@ -15,6 +15,7 @@ requirements.
 | [`colbymchenry/codegraph`](https://github.com/colbymchenry/codegraph) | Symbol lookup, caller/callee discovery, route indexing, and change-impact exploration | That a generated edge establishes domain ownership or that every dynamic dependency was found |
 | [`DietrichGebert/ponytail`](https://github.com/DietrichGebert/ponytail) | A minimum-solution ladder and focused over-engineering review prompts | That its benchmark savings apply locally, or that shorter code permits removing validation, safety, accessibility, ownership, or lifecycle boundaries |
 | [`yukkcat/nanocat-ui`](https://github.com/yukkcat/nanocat-ui) | Generic Vue controls, overlays, tokens, focus behavior, and interaction primitives consumed as an npm dependency | That product pages, domain workflows, charts, or responsive composition belong in the UI package |
+| [`jwbb903/ChatGPT2API-GO`](https://github.com/jwbb903/ChatGPT2API-GO/tree/4edb42db8aad29178a9eaae610ceb68b20644038) | Comparison of the Go Turnstile implementation at the pinned revision; local code instead ports `utils/turnstile.py` to retain fractional register identifiers and nested queue behavior | Current Sentinel protocol compatibility or full VM parity; no implementation or dependency was imported from this reference |
 
 ## Reference workflow
 

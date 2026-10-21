@@ -41,6 +41,13 @@ Executable documentation rules live in
 
 ## Current documents
 
+The [Go PostgreSQL/Redis live-verification guide](go-live-verification.md) records
+the optional cache setup, authorized account import, actual public API results
+and origin-account timeout recovery after process restart.
+The [Go release runbook](runbooks/go-release.md) owns the separate container,
+PostgreSQL/Redis deployment, clean-source CI and quiesced backup/restore/rollback
+commands; production routing remains separately authorized.
+
 | Document | Status | Purpose |
 | --- | --- | --- |
 | [`control-panel-architecture.md`](control-panel-architecture.md) | current | Routes, ownership, persistence boundaries, and UI boundary |
@@ -52,6 +59,11 @@ Executable documentation rules live in
 | [`prompt-library-architecture.md`](prompt-library-architecture.md) | current | Prompt source and library projection lifecycle |
 | [`deployment.md`](deployment.md) | current | Docker, source development, backup, and upgrade guidance |
 | [`upstream-sse-conversation.md`](upstream-sse-conversation.md) | current | Internal Conversation SSE and result-resolution reference |
+| [`go-api-compatibility.md`](go-api-compatibility.md) | current | Complete method/path/source inventory and Go migration compatibility gates |
+| [`go-remaining-operations.md`](go-remaining-operations.md) | current | Stage-4 remaining routes, files, observability, backup, local Go updates and measured performance |
+| [`go-public-execution.md`](go-public-execution.md) | current | Stage-3 public protocols, durable Image Tasks, asset save/read and final Call Records |
+| [`go-control-plane.md`](go-control-plane.md) | current | Native stage-2 management routes, compatible repositories, scheduling and rehearsal evidence |
+| [`go-upstream-prototype.md`](go-upstream-prototype.md) | current | Standalone Go probe, Turnstile, sampled live image evidence and remaining compatibility gates |
 
 ## Documentation rules
 

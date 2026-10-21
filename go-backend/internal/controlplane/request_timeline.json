@@ -1,0 +1,272 @@
+{
+  "categories": [
+    [
+      "entry",
+      "入口与账号"
+    ],
+    [
+      "prepare",
+      "上游准备"
+    ],
+    [
+      "upstream",
+      "上游生成"
+    ],
+    [
+      "resolve",
+      "结果处理"
+    ],
+    [
+      "download",
+      "图片下载"
+    ]
+  ],
+  "steps": [
+    [
+      "handler_queue_ms",
+      "等待入口",
+      "entry",
+      "run_in_threadpool"
+    ],
+    [
+      "stream_first_queue_ms",
+      "读取首包",
+      "entry",
+      "首个响应事件"
+    ],
+    [
+      "account_wait_ms",
+      "等待账号",
+      "entry",
+      "账号池筛选"
+    ],
+    [
+      "egress_wait_ms",
+      "等待出口",
+      "entry",
+      "代理出口准备"
+    ],
+    [
+      "egress_acquire_ms",
+      "出口租约",
+      "entry",
+      "代理节点并发"
+    ],
+    [
+      "upload_ms",
+      "上传输入图",
+      "prepare",
+      "参考图上传"
+    ],
+    [
+      "bootstrap_ms",
+      "预热页面",
+      "prepare",
+      "ChatGPT 页面"
+    ],
+    [
+      "requirements_ms",
+      "获取请求令牌",
+      "prepare",
+      "requirements / token"
+    ],
+    [
+      "prepare_conversation_ms",
+      "准备会话",
+      "prepare",
+      "图片会话上下文"
+    ],
+    [
+      "http_dns_ms",
+      "HTTP DNS",
+      "prepare",
+      "域名解析"
+    ],
+    [
+      "http_tcp_ms",
+      "HTTP TCP",
+      "prepare",
+      "代理 / TCP 建连"
+    ],
+    [
+      "http_tls_ms",
+      "HTTP TLS",
+      "prepare",
+      "TLS 握手"
+    ],
+    [
+      "http_wait_ms",
+      "HTTP 等待",
+      "prepare",
+      "请求发出到首包"
+    ],
+    [
+      "http_ttfb_ms",
+      "HTTP 首包",
+      "prepare",
+      "请求开始到首包"
+    ],
+    [
+      "generation_start_ms",
+      "启动生成",
+      "upstream",
+      "提交上游请求"
+    ],
+    [
+      "sse_stream_ms",
+      "SSE 流耗时",
+      "upstream",
+      "data 事件持续时间"
+    ],
+    [
+      "sse_first_event_ms",
+      "SSE 首事件",
+      "upstream",
+      "首个 data 事件"
+    ],
+    [
+      "sse_max_gap_ms",
+      "SSE 最大空窗",
+      "upstream",
+      "两次事件最大间隔"
+    ],
+    [
+      "sse_last_gap_ms",
+      "SSE 收尾空窗",
+      "upstream",
+      "最后事件到关闭"
+    ],
+    [
+      "conversation_stream_ms",
+      "上游生成",
+      "upstream",
+      "ChatGPT 会话流"
+    ],
+    [
+      "stream_error_ms",
+      "上游断流",
+      "upstream",
+      "HTTP2 / SSE"
+    ],
+    [
+      "poll_wait_ms",
+      "等待结果",
+      "resolve",
+      "首次等待 / 轮询间隔 / 退避"
+    ],
+    [
+      "poll_request_ms",
+      "查询结果",
+      "resolve",
+      "task / conversation"
+    ],
+    [
+      "resolve_ms",
+      "解析结果",
+      "resolve",
+      "file ID / 下载地址"
+    ],
+    [
+      "response_ms",
+      "响应整理",
+      "resolve",
+      "Codex 响应"
+    ],
+    [
+      "download_ms",
+      "下载图片",
+      "download",
+      "图片文件下载"
+    ]
+  ],
+  "segments": [
+    [
+      "entry_queue",
+      "入口排队",
+      "entry",
+      [
+        "handler_queue_ms",
+        "stream_first_queue_ms"
+      ]
+    ],
+    [
+      "account_egress",
+      "账号与出口",
+      "entry",
+      [
+        "account_wait_ms",
+        "egress_wait_ms"
+      ]
+    ],
+    [
+      "prepare",
+      "上游准备",
+      "prepare",
+      [
+        "upload_ms",
+        "bootstrap_ms",
+        "requirements_ms",
+        "prepare_conversation_ms"
+      ]
+    ],
+    [
+      "upstream",
+      "上游生成",
+      "upstream",
+      [
+        "generation_start_ms",
+        "sse_stream_ms"
+      ]
+    ],
+    [
+      "poll_wait",
+      "等待结果",
+      "resolve",
+      [
+        "poll_wait_ms"
+      ]
+    ],
+    [
+      "query_resolve",
+      "查询与解析",
+      "resolve",
+      [
+        "poll_request_ms",
+        "resolve_ms",
+        "response_ms"
+      ]
+    ],
+    [
+      "download",
+      "图片下载",
+      "download",
+      [
+        "download_ms"
+      ]
+    ]
+  ],
+  "thresholds": {
+    "handler_queue_ms": 1000,
+    "stream_first_queue_ms": 1000,
+    "account_wait_ms": 10000,
+    "egress_wait_ms": 10000,
+    "egress_acquire_ms": 10000,
+    "upload_ms": 60000,
+    "bootstrap_ms": 60000,
+    "requirements_ms": 60000,
+    "prepare_conversation_ms": 60000,
+    "generation_start_ms": 60000,
+    "http_dns_ms": 1000,
+    "http_tcp_ms": 3000,
+    "http_tls_ms": 5000,
+    "http_wait_ms": 30000,
+    "http_ttfb_ms": 30000,
+    "sse_first_event_ms": 30000,
+    "sse_max_gap_ms": 60000,
+    "sse_last_gap_ms": 30000,
+    "poll_wait_ms": 60000,
+    "poll_request_ms": 30000,
+    "download_ms": 60000,
+    "response_ms": 30000
+  }
+}

@@ -114,6 +114,7 @@ _Avoid_: A global repository for settings, logs, images, and task state
 - An **Upstream Account** owns one set of **Upstream Credentials**; the Refresh Token renews the Access Token, while account and quota synchronization is a separate operation.
 - **Account Processing Concurrency** limits remote maintenance per active **Upstream Account** and reserves one slot for each complete local atomic account batch; it does not limit Image Task execution slots.
 - An **Image Task** produces zero or more **Image Assets** and exposes one terminal result.
+- An **Image Task** may retain a credential-free reference to the **Upstream Account** that owns its known conversation; read-only recovery uses that account's current credentials and never selects a replacement or submits generation.
 - An **Editable File Task** publishes one primary **Editable File Asset** and one ZIP **Editable File Asset** when it succeeds; asset reads do not depend on retaining the task record.
 - An image call contains one or more **Image Attempts**; an **Account Switch** links consecutive attempts but is not itself a terminal result.
 - A completed public invocation produces one **Call Record**, while an **Active Request** exists only during the live request window.

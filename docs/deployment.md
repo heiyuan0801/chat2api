@@ -2,6 +2,10 @@
 
 状态：当前
 
+Go 版使用独立的 Dockerfile、Compose、PostgreSQL/Redis 与备份恢复命令，见
+[`Go 构建与灰度准备`](runbooks/go-release.md)。下文仍是保留的 Python 发布线，
+不会因推送 Go 源码自动替换现有部署。
+
 本项目的发布镜像默认是 `ghcr.io/yukkcat/chatgpt2api:latest`。标准 Compose 将服务暴露在 `3000` 端口，使用 `chatgpt2api-runtime` 命名卷保存可更新的应用运行目录，并单独挂载本地 `data/` 和 `config.json`。运行时配置和数据不应提交到 Git。
 
 ## Docker 部署

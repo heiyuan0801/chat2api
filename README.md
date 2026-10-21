@@ -25,6 +25,13 @@
   · <a href="./docs/README.md">维护文档</a>
 </p>
 
+## Go 构建候选版
+
+本仓库提供保留原 Vue 与 API/数据格式的 Go 后端，使用独立的
+`Dockerfile.go`、`docker-compose.go.yml` 和 PostgreSQL＋Redis。
+构建下载、启动、备份恢复、回滚及灰度准备见 [Go 运维手册](docs/runbooks/go-release.md)。
+原 Python 发布入口保留；Go 构建成功不代表已切换生产服务。
+
 > [!IMPORTANT]
 > `v3.0.0` 是新的发布起点。远程 `main` 历史已重新整理，旧版本源代码、Git 标签、Release 和容器镜像不再作为当前发布线维护。3.0 使用全新的 Application Database，不能直接读取 2.x 的分散存储数据；升级时请重新配置或导入账号。
 

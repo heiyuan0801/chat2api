@@ -22,3 +22,14 @@ web_dist
 
 assets
 README.md
+.env*
+**/tests
+.codex_tmp
+.codegraph*
+go-backend/release
+data
+output
+release
+*.db
+*.sqlite*
+.playwright*

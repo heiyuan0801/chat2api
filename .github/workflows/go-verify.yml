@@ -1,0 +1,126 @@
+name: Verify Go
+
+on:
+  push:
+    branches: [main, 'codex/**']
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go-backend/go.mod
+          cache-dependency-path: go-backend/go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web-vue/package-lock.json
+      - name: Verify tag and source inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            test "${GITHUB_REF#refs/tags/v}" = "$(tr -d '\r\n' < VERSION)"
+          fi
+          python3 scripts/check_go_api_inventory.py
+      - name: Compile clean Go source and build unchanged Vue
+        run: |
+          go -C go-backend mod verify
+          go -C go-backend vet ./...
+          go -C go-backend test ./...
+          npm --prefix web-vue ci --no-audit --no-fund
+          npm --prefix web-vue run build
+      - name: Build native Go artifacts
+        shell: bash
+        env:
+          CHATGPT2API_RELEASE_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64; do
+            go -C go-backend run ./cmd/release-bundle \
+              -module-dir "$GITHUB_WORKSPACE/go-backend" \
+              -web-dir "$GITHUB_WORKSPACE/web-vue/dist" \
+              -output-dir "$RUNNER_TEMP/go-bundles" -version "$(tr -d '\r\n' < VERSION)" \
+              -goos "${target%/*}" -goarch "${target#*/}"
+          done
+          (cd "$RUNNER_TEMP/go-bundles" && sha256sum --check checksums.txt)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: go-native-bundles-${{ github.sha }}
+          path: ${{ runner.temp }}/go-bundles/*
+          retention-days: 7
+          if-no-files-found: error
+
+  verify-go-container:
+    needs: verify-go
+    runs-on: ubuntu-latest
+    env:
+      CHATGPT2API_GO_ENV_FILE: /dev/null
+      CHATGPT2API_GO_PROJECT: go-ci-source
+      CHATGPT2API_GO_IMAGE: chatgpt2api-go:ci
+      CHATGPT2API_AUTH_KEY: synthetic-ci-bootstrap
+      POSTGRES_PASSWORD: synthetic_ci_postgres
+      REDIS_PASSWORD: synthetic_ci_redis
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build clean Go container
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.go
+          target: app
+          load: true
+          build-args: RELEASE_REPOSITORY=${{ github.repository }}
+          tags: chatgpt2api-go:ci
+          cache-from: type=gha,scope=go
+          cache-to: type=gha,mode=max,scope=go
+      - name: Start and verify PostgreSQL/Redis deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          dc=(docker compose --env-file /dev/null -f docker-compose.go.yml)
+          "${dc[@]}" up -d --wait postgres redis
+          "${dc[@]}" run --rm init
+          "${dc[@]}" up -d --wait app
+          bash deploy/go-ops.sh verify
+          curl --fail --silent --show-error http://127.0.0.1:3001/ -o "$RUNNER_TEMP/vue.html"
+          curl --fail --silent --show-error -H "Authorization: Bearer $CHATGPT2API_AUTH_KEY" http://127.0.0.1:3001/v1/models -o "$RUNNER_TEMP/models.json"
+          python3 -c 'import json,os,pathlib; p=pathlib.Path(os.environ["RUNNER_TEMP"]); assert "<html" in (p/"vue.html").read_text(); assert json.loads((p/"models.json").read_text())["data"]'
+          "${dc[@]}" exec -T app sh -ec 'printf artifact-fixture > /app/data/release-probe'
+          bash deploy/go-ops.sh backup "$RUNNER_TEMP/go-backup"
+      - name: Restore into independent empty volumes and roll back image
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CHATGPT2API_GO_PROJECT=go-ci-restored CHATGPT2API_GO_PORT=3002
+          bash deploy/go-ops.sh restore "$RUNNER_TEMP/go-backup"
+          docker compose --env-file /dev/null -f docker-compose.go.yml up -d --wait app
+          bash deploy/go-ops.sh verify
+          test "$(docker compose --env-file /dev/null -f docker-compose.go.yml exec -T app cat /app/data/release-probe)" = artifact-fixture
+          bash deploy/go-ops.sh rollback "$RUNNER_TEMP/go-backup"
+          bash deploy/go-ops.sh verify
+      - name: Export verified image
+        shell: bash
+        run: docker save chatgpt2api-go:ci | gzip > "$RUNNER_TEMP/chatgpt2api-go-linux-amd64.tar.gz"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: go-container-linux-amd64-${{ github.sha }}
+          path: ${{ runner.temp }}/chatgpt2api-go-linux-amd64.tar.gz
+          retention-days: 7
+          if-no-files-found: error
+      - name: Remove isolated CI projects
+        if: always()
+        shell: bash
+        run: |
+          for project in go-ci-source go-ci-restored; do
+            CHATGPT2API_GO_PROJECT="$project" docker compose --env-file /dev/null -f docker-compose.go.yml down -v --remove-orphans
+          done

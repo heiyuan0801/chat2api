@@ -1,0 +1,466 @@
+{
+  "model_encodings": {
+    "ada": "r50k_base",
+    "babbage": "r50k_base",
+    "babbage-002": "cl100k_base",
+    "code-cushman-001": "p50k_base",
+    "code-cushman-002": "p50k_base",
+    "code-davinci-001": "p50k_base",
+    "code-davinci-002": "p50k_base",
+    "code-davinci-edit-001": "p50k_edit",
+    "code-search-ada-code-001": "r50k_base",
+    "code-search-babbage-code-001": "r50k_base",
+    "curie": "r50k_base",
+    "cushman-codex": "p50k_base",
+    "davinci": "r50k_base",
+    "davinci-002": "cl100k_base",
+    "davinci-codex": "p50k_base",
+    "gpt-2": "gpt2",
+    "gpt-3.5": "cl100k_base",
+    "gpt-3.5-turbo": "cl100k_base",
+    "gpt-35-turbo": "cl100k_base",
+    "gpt-4": "cl100k_base",
+    "gpt-4.1": "o200k_base",
+    "gpt-4o": "o200k_base",
+    "gpt-5": "o200k_base",
+    "gpt2": "gpt2",
+    "o1": "o200k_base",
+    "o3": "o200k_base",
+    "o4-mini": "o200k_base",
+    "text-ada-001": "r50k_base",
+    "text-babbage-001": "r50k_base",
+    "text-curie-001": "r50k_base",
+    "text-davinci-001": "r50k_base",
+    "text-davinci-002": "p50k_base",
+    "text-davinci-003": "p50k_base",
+    "text-davinci-edit-001": "p50k_edit",
+    "text-embedding-3-large": "cl100k_base",
+    "text-embedding-3-small": "cl100k_base",
+    "text-embedding-ada-002": "cl100k_base",
+    "text-search-ada-doc-001": "r50k_base",
+    "text-search-babbage-doc-001": "r50k_base",
+    "text-search-curie-doc-001": "r50k_base",
+    "text-search-davinci-doc-001": "r50k_base",
+    "text-similarity-ada-001": "r50k_base",
+    "text-similarity-babbage-001": "r50k_base",
+    "text-similarity-curie-001": "r50k_base",
+    "text-similarity-davinci-001": "r50k_base"
+  },
+  "models": {
+    "AnthropicMessageRequest": {
+      "additionalProperties": true,
+      "properties": {
+        "messages": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Messages"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "stream": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stream"
+        },
+        "system": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "System"
+        }
+      },
+      "title": "AnthropicMessageRequest",
+      "type": "object",
+      "x-field-order": [
+        "model",
+        "messages",
+        "system",
+        "stream"
+      ]
+    },
+    "ChatCompletionRequest": {
+      "additionalProperties": true,
+      "properties": {
+        "messages": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Messages"
+        },
+        "modalities": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Modalities"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "n": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "N"
+        },
+        "prompt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Prompt"
+        },
+        "stream": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stream"
+        }
+      },
+      "title": "ChatCompletionRequest",
+      "type": "object",
+      "x-field-order": [
+        "model",
+        "prompt",
+        "n",
+        "stream",
+        "modalities",
+        "messages"
+      ]
+    },
+    "ImageGenerationRequest": {
+      "properties": {
+        "history_disabled": {
+          "default": true,
+          "title": "History Disabled",
+          "type": "boolean"
+        },
+        "model": {
+          "default": "gpt-image-2",
+          "title": "Model",
+          "type": "string"
+        },
+        "n": {
+          "default": 1,
+          "maximum": 4,
+          "minimum": 1,
+          "title": "N",
+          "type": "integer"
+        },
+        "prompt": {
+          "minLength": 1,
+          "title": "Prompt",
+          "type": "string"
+        },
+        "quality": {
+          "default": "auto",
+          "title": "Quality",
+          "type": "string"
+        },
+        "response_format": {
+          "default": "b64_json",
+          "title": "Response Format",
+          "type": "string"
+        },
+        "size": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Size"
+        },
+        "stream": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stream"
+        }
+      },
+      "required": [
+        "prompt"
+      ],
+      "title": "ImageGenerationRequest",
+      "type": "object",
+      "x-field-order": [
+        "prompt",
+        "model",
+        "n",
+        "size",
+        "quality",
+        "response_format",
+        "history_disabled",
+        "stream"
+      ]
+    },
+    "ImageGenerationTaskRequest": {
+      "properties": {
+        "client_task_id": {
+          "minLength": 1,
+          "title": "Client Task Id",
+          "type": "string"
+        },
+        "model": {
+          "default": "gpt-image-2",
+          "title": "Model",
+          "type": "string"
+        },
+        "n": {
+          "default": 1,
+          "maximum": 4,
+          "minimum": 1,
+          "title": "N",
+          "type": "integer"
+        },
+        "prompt": {
+          "minLength": 1,
+          "title": "Prompt",
+          "type": "string"
+        },
+        "quality": {
+          "default": "auto",
+          "title": "Quality",
+          "type": "string"
+        },
+        "size": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Size"
+        }
+      },
+      "required": [
+        "client_task_id",
+        "prompt"
+      ],
+      "title": "ImageGenerationTaskRequest",
+      "type": "object",
+      "x-field-order": [
+        "client_task_id",
+        "prompt",
+        "model",
+        "n",
+        "size",
+        "quality"
+      ]
+    },
+    "ResponseCreateRequest": {
+      "additionalProperties": true,
+      "properties": {
+        "input": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "stream": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stream"
+        },
+        "tool_choice": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tool Choice"
+        },
+        "tools": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tools"
+        }
+      },
+      "title": "ResponseCreateRequest",
+      "type": "object",
+      "x-field-order": [
+        "model",
+        "input",
+        "tools",
+        "tool_choice",
+        "stream"
+      ]
+    },
+    "ResumePollRequest": {
+      "properties": {
+        "extra_timeout_secs": {
+          "default": 30.0,
+          "maximum": 120.0,
+          "minimum": 5.0,
+          "title": "Extra Timeout Secs",
+          "type": "number"
+        }
+      },
+      "title": "ResumePollRequest",
+      "type": "object",
+      "x-field-order": [
+        "extra_timeout_secs"
+      ]
+    },
+    "SearchRequest": {
+      "properties": {
+        "prompt": {
+          "minLength": 1,
+          "title": "Prompt",
+          "type": "string"
+        }
+      },
+      "required": [
+        "prompt"
+      ],
+      "title": "SearchRequest",
+      "type": "object",
+      "x-field-order": [
+        "prompt"
+      ]
+    }
+  },
+  "prefix_encodings": {
+    "chatgpt-4o-": "o200k_base",
+    "ft:babbage-002": "cl100k_base",
+    "ft:davinci-002": "cl100k_base",
+    "ft:gpt-3.5-turbo": "cl100k_base",
+    "ft:gpt-4": "cl100k_base",
+    "ft:gpt-4o": "o200k_base",
+    "gpt-3.5-turbo-": "cl100k_base",
+    "gpt-35-turbo-": "cl100k_base",
+    "gpt-4-": "cl100k_base",
+    "gpt-4.1-": "o200k_base",
+    "gpt-4.5-": "o200k_base",
+    "gpt-4o-": "o200k_base",
+    "gpt-5-": "o200k_base",
+    "gpt-oss-": "o200k_harmony",
+    "o1-": "o200k_base",
+    "o3-": "o200k_base",
+    "o4-mini-": "o200k_base"
+  }
+}

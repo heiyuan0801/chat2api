@@ -1,0 +1,2694 @@
+{
+  "effective_defaults": {
+    "account_groups": [],
+    "account_processing_concurrency": 30,
+    "ai_review": {},
+    "auto_remove_invalid_accounts": true,
+    "auto_remove_rate_limited_accounts": false,
+    "backup": {
+      "access_key_id": "",
+      "account_id": "",
+      "bucket": "",
+      "enabled": false,
+      "encrypt": false,
+      "include": {
+        "editable_files": true,
+        "image_tasks": true,
+        "images": false
+      },
+      "interval_minutes": 360,
+      "passphrase": "",
+      "prefix": "backups",
+      "provider": "cloudflare_r2",
+      "rotation_keep": 10,
+      "secret_access_key": ""
+    },
+    "chat_completion_cache": {
+      "dedupe_inflight": true,
+      "drop_adjacent_duplicates": true,
+      "drop_assistant_history": false,
+      "enabled": true,
+      "max_entries": 256,
+      "normalize_messages": true,
+      "stream_cache": true,
+      "ttl_seconds": 60
+    },
+    "console_request_timeout_secs": 600,
+    "fallback_proxy": "",
+    "genbox_push": {
+      "auto_push_after_studio": false,
+      "base_url": "",
+      "enabled": false,
+      "push_key": "",
+      "source_id": "",
+      "timeout_secs": 20
+    },
+    "global_system_prompt": "",
+    "image_account_concurrency": 1,
+    "image_account_retry_enabled": true,
+    "image_max_account_attempts": 4,
+    "image_min_free_mb": 500,
+    "image_parallel_generation": true,
+    "image_poll_initial_wait_secs": 5.0,
+    "image_poll_interval_secs": 5.0,
+    "image_poll_timeout_secs": 60,
+    "image_remove_conversation_after_result": false,
+    "image_retention_hours": 24,
+    "image_storage": {
+      "enabled": false,
+      "mode": "local",
+      "public_base_url": "",
+      "webdav_password": "",
+      "webdav_root_path": "chatgpt2api/images",
+      "webdav_url": "",
+      "webdav_username": ""
+    },
+    "image_stream_timeout_secs": 80,
+    "image_upscale_enabled": false,
+    "image_upscale_engine": "sharp_lanczos3",
+    "log_levels": [],
+    "log_retention_hours": 24,
+    "proxy_runtime": {
+      "clearance": {
+        "browser": "chrome",
+        "cf_clearance": "",
+        "cf_cookies": "",
+        "enabled": false,
+        "flaresolverr_url": "",
+        "has_cf_clearance": false,
+        "has_cf_cookies": false,
+        "mode": "none",
+        "refresh_interval": 3600,
+        "timeout_sec": 60,
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+        "warm_up_on_start": false
+      },
+      "enabled": false,
+      "reset_session_status_codes": [
+        403
+      ],
+      "resource_proxy_url": "",
+      "skip_ssl_verify": false
+    },
+    "refresh_account_interval_minute": 5,
+    "sensitive_words": [],
+    "third_party_apps": {
+      "infinite_canvas": {
+        "enabled": false,
+        "url": "https://canvas.best"
+      }
+    }
+  },
+  "fields": {
+    "account_processing_concurrency": {
+      "default": 30,
+      "max": 100,
+      "min": 1,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "ai_review.api_key": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": true,
+      "unit": null
+    },
+    "ai_review.base_url": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "ai_review.enabled": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "ai_review.model": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "ai_review.prompt": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "auto_remove_invalid_accounts": {
+      "default": true,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "auto_remove_rate_limited_accounts": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.access_key_id": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.account_id": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.bucket": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.enabled": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.encrypt": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.include.editable_files": {
+      "default": true,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.include.image_tasks": {
+      "default": true,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.include.images": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.interval_minutes": {
+      "default": 360,
+      "max": null,
+      "min": 1,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "minutes"
+    },
+    "backup.passphrase": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": true,
+      "unit": null
+    },
+    "backup.prefix": {
+      "default": "backups",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.provider": {
+      "default": "cloudflare_r2",
+      "max": null,
+      "min": null,
+      "options": [
+        "cloudflare_r2"
+      ],
+      "read_only": true,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.rotation_keep": {
+      "default": 10,
+      "max": null,
+      "min": 0,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "backup.secret_access_key": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": true,
+      "unit": null
+    },
+    "base_url": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "console_request_timeout_secs": {
+      "default": 600,
+      "max": 3600,
+      "min": 30,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "seconds"
+    },
+    "genbox_push.auto_push_after_studio": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "genbox_push.base_url": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "genbox_push.enabled": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "genbox_push.push_key": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": true,
+      "unit": null
+    },
+    "genbox_push.source_id": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "genbox_push.timeout_secs": {
+      "default": 20,
+      "max": 120,
+      "min": 5,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "seconds"
+    },
+    "global_system_prompt": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_account_concurrency": {
+      "default": 1,
+      "max": 3,
+      "min": 1,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_account_retry_enabled": {
+      "default": true,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_max_account_attempts": {
+      "default": 4,
+      "max": null,
+      "min": 2,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_poll_initial_wait_secs": {
+      "default": 5.0,
+      "max": 60.0,
+      "min": 0.0,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "seconds"
+    },
+    "image_poll_interval_secs": {
+      "default": 5.0,
+      "max": 60.0,
+      "min": 0.5,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "seconds"
+    },
+    "image_poll_timeout_secs": {
+      "default": 60,
+      "max": null,
+      "min": 1,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "seconds"
+    },
+    "image_remove_conversation_after_result": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_retention_hours": {
+      "default": 24,
+      "max": null,
+      "min": 1,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "hours"
+    },
+    "image_settle_enabled": {
+      "default": true,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_settle_secs": {
+      "default": 5.0,
+      "max": null,
+      "min": 0.5,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "seconds"
+    },
+    "image_storage.enabled": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_storage.mode": {
+      "default": "local",
+      "max": null,
+      "min": null,
+      "options": [
+        "local",
+        "webdav",
+        "both"
+      ],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_storage.public_base_url": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_storage.webdav_password": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": true,
+      "unit": null
+    },
+    "image_storage.webdav_root_path": {
+      "default": "chatgpt2api/images",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_storage.webdav_url": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_storage.webdav_username": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_stream_timeout_secs": {
+      "default": 80,
+      "max": null,
+      "min": 1,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "seconds"
+    },
+    "image_upscale_enabled": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "image_upscale_engine": {
+      "default": "sharp_lanczos3",
+      "max": null,
+      "min": null,
+      "options": [
+        "sharp_lanczos3",
+        "pillow_lanczos"
+      ],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "log_levels": {
+      "default": [],
+      "max": null,
+      "min": null,
+      "options": [
+        "debug",
+        "info",
+        "warning",
+        "error"
+      ],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "log_retention_hours": {
+      "default": 24,
+      "max": null,
+      "min": 1,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "hours"
+    },
+    "proxy_runtime.clearance.cf_clearance": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": true,
+      "unit": null
+    },
+    "proxy_runtime.clearance.cf_cookies": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": true,
+      "unit": null
+    },
+    "proxy_runtime.clearance.enabled": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "proxy_runtime.clearance.flaresolverr_url": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "proxy_runtime.clearance.mode": {
+      "default": "none",
+      "max": null,
+      "min": null,
+      "options": [
+        "none",
+        "manual",
+        "flaresolverr"
+      ],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "proxy_runtime.clearance.refresh_interval": {
+      "default": 3600,
+      "max": null,
+      "min": 60,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "seconds"
+    },
+    "proxy_runtime.clearance.timeout_sec": {
+      "default": 60,
+      "max": null,
+      "min": 1,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "seconds"
+    },
+    "proxy_runtime.clearance.user_agent": {
+      "default": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "proxy_runtime.clearance.warm_up_on_start": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "proxy_runtime.enabled": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "proxy_runtime.resource_proxy_url": {
+      "default": "",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "proxy_runtime.skip_ssl_verify": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "refresh_account_interval_minute": {
+      "default": 5,
+      "max": null,
+      "min": 1,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": "minutes"
+    },
+    "sensitive_words": {
+      "default": [],
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "third_party_apps.infinite_canvas.enabled": {
+      "default": false,
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    },
+    "third_party_apps.infinite_canvas.url": {
+      "default": "https://canvas.best",
+      "max": null,
+      "min": null,
+      "options": [],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
+    }
+  },
+  "managed": [
+    "proxy_runtime",
+    "base_url",
+    "refresh_account_interval_minute",
+    "image_retention_hours",
+    "log_retention_hours",
+    "console_request_timeout_secs",
+    "image_poll_timeout_secs",
+    "image_stream_timeout_secs",
+    "image_poll_initial_wait_secs",
+    "image_poll_interval_secs",
+    "image_account_concurrency",
+    "account_processing_concurrency",
+    "image_account_retry_enabled",
+    "image_upscale_enabled",
+    "image_upscale_engine",
+    "image_max_account_attempts",
+    "image_remove_conversation_after_result",
+    "image_settle_enabled",
+    "image_settle_secs",
+    "auto_remove_invalid_accounts",
+    "auto_remove_rate_limited_accounts",
+    "log_levels",
+    "global_system_prompt",
+    "sensitive_words",
+    "ai_review",
+    "image_storage",
+    "genbox_push",
+    "backup",
+    "third_party_apps"
+  ],
+  "models": {
+    "AccountBatchUpdateRequest": {
+      "$defs": {
+        "AccountSelectionScope": {
+          "properties": {
+            "account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Account Ids",
+              "type": "array"
+            },
+            "excluded_account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Excluded Account Ids",
+              "type": "array"
+            },
+            "group_id": {
+              "default": "all",
+              "title": "Group Id",
+              "type": "string"
+            },
+            "keyword": {
+              "default": "",
+              "title": "Keyword",
+              "type": "string"
+            },
+            "mode": {
+              "default": "explicit",
+              "enum": [
+                "explicit",
+                "filter",
+                "all"
+              ],
+              "title": "Mode",
+              "type": "string"
+            },
+            "status": {
+              "default": "all",
+              "title": "Status",
+              "type": "string"
+            }
+          },
+          "title": "AccountSelectionScope",
+          "type": "object",
+          "x-field-order": [
+            "mode",
+            "account_ids",
+            "excluded_account_ids",
+            "keyword",
+            "status",
+            "group_id"
+          ]
+        }
+      },
+      "properties": {
+        "access_tokens": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Access Tokens",
+          "type": "array"
+        },
+        "account_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Account Ids",
+          "type": "array"
+        },
+        "operation": {
+          "anyOf": [
+            {
+              "enum": [
+                "update",
+                "enable",
+                "disable",
+                "reset"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operation"
+        },
+        "selection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AccountSelectionScope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "status": {
+          "anyOf": [
+            {
+              "enum": [
+                "正常",
+                "限流",
+                "异常",
+                "禁用"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Status"
+        }
+      },
+      "title": "AccountBatchUpdateRequest",
+      "type": "object",
+      "x-field-order": [
+        "account_ids",
+        "access_tokens",
+        "selection",
+        "status",
+        "operation"
+      ]
+    },
+    "AccountCreateRequest": {
+      "properties": {
+        "accounts": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Accounts",
+          "type": "array"
+        },
+        "refresh": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Refresh"
+        },
+        "restore": {
+          "default": false,
+          "title": "Restore",
+          "type": "boolean"
+        },
+        "return_items": {
+          "default": true,
+          "title": "Return Items",
+          "type": "boolean"
+        },
+        "sync_after_import": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sync After Import"
+        },
+        "target_group_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Group Id"
+        },
+        "tokens": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tokens",
+          "type": "array"
+        }
+      },
+      "title": "AccountCreateRequest",
+      "type": "object",
+      "x-field-order": [
+        "tokens",
+        "accounts",
+        "sync_after_import",
+        "refresh",
+        "restore",
+        "return_items",
+        "target_group_id"
+      ]
+    },
+    "AccountDeleteRequest": {
+      "$defs": {
+        "AccountSelectionScope": {
+          "properties": {
+            "account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Account Ids",
+              "type": "array"
+            },
+            "excluded_account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Excluded Account Ids",
+              "type": "array"
+            },
+            "group_id": {
+              "default": "all",
+              "title": "Group Id",
+              "type": "string"
+            },
+            "keyword": {
+              "default": "",
+              "title": "Keyword",
+              "type": "string"
+            },
+            "mode": {
+              "default": "explicit",
+              "enum": [
+                "explicit",
+                "filter",
+                "all"
+              ],
+              "title": "Mode",
+              "type": "string"
+            },
+            "status": {
+              "default": "all",
+              "title": "Status",
+              "type": "string"
+            }
+          },
+          "title": "AccountSelectionScope",
+          "type": "object",
+          "x-field-order": [
+            "mode",
+            "account_ids",
+            "excluded_account_ids",
+            "keyword",
+            "status",
+            "group_id"
+          ]
+        }
+      },
+      "properties": {
+        "account_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Account Ids",
+          "type": "array"
+        },
+        "selection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AccountSelectionScope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "tokens": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tokens",
+          "type": "array"
+        }
+      },
+      "title": "AccountDeleteRequest",
+      "type": "object",
+      "x-field-order": [
+        "account_ids",
+        "tokens",
+        "selection"
+      ]
+    },
+    "AccountExportRequest": {
+      "$defs": {
+        "AccountSelectionScope": {
+          "properties": {
+            "account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Account Ids",
+              "type": "array"
+            },
+            "excluded_account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Excluded Account Ids",
+              "type": "array"
+            },
+            "group_id": {
+              "default": "all",
+              "title": "Group Id",
+              "type": "string"
+            },
+            "keyword": {
+              "default": "",
+              "title": "Keyword",
+              "type": "string"
+            },
+            "mode": {
+              "default": "explicit",
+              "enum": [
+                "explicit",
+                "filter",
+                "all"
+              ],
+              "title": "Mode",
+              "type": "string"
+            },
+            "status": {
+              "default": "all",
+              "title": "Status",
+              "type": "string"
+            }
+          },
+          "title": "AccountSelectionScope",
+          "type": "object",
+          "x-field-order": [
+            "mode",
+            "account_ids",
+            "excluded_account_ids",
+            "keyword",
+            "status",
+            "group_id"
+          ]
+        }
+      },
+      "properties": {
+        "access_tokens": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Access Tokens",
+          "type": "array"
+        },
+        "account_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Account Ids",
+          "type": "array"
+        },
+        "format": {
+          "default": "json",
+          "enum": [
+            "json",
+            "zip",
+            "txt"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "selection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AccountSelectionScope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "AccountExportRequest",
+      "type": "object",
+      "x-field-order": [
+        "account_ids",
+        "access_tokens",
+        "format",
+        "selection"
+      ]
+    },
+    "AccountGroupBindRequest": {
+      "$defs": {
+        "AccountSelectionScope": {
+          "properties": {
+            "account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Account Ids",
+              "type": "array"
+            },
+            "excluded_account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Excluded Account Ids",
+              "type": "array"
+            },
+            "group_id": {
+              "default": "all",
+              "title": "Group Id",
+              "type": "string"
+            },
+            "keyword": {
+              "default": "",
+              "title": "Keyword",
+              "type": "string"
+            },
+            "mode": {
+              "default": "explicit",
+              "enum": [
+                "explicit",
+                "filter",
+                "all"
+              ],
+              "title": "Mode",
+              "type": "string"
+            },
+            "status": {
+              "default": "all",
+              "title": "Status",
+              "type": "string"
+            }
+          },
+          "title": "AccountSelectionScope",
+          "type": "object",
+          "x-field-order": [
+            "mode",
+            "account_ids",
+            "excluded_account_ids",
+            "keyword",
+            "status",
+            "group_id"
+          ]
+        }
+      },
+      "properties": {
+        "access_tokens": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Access Tokens",
+          "type": "array"
+        },
+        "account_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Account Ids",
+          "type": "array"
+        },
+        "group_id": {
+          "default": "",
+          "title": "Group Id",
+          "type": "string"
+        },
+        "selection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AccountSelectionScope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "AccountGroupBindRequest",
+      "type": "object",
+      "x-field-order": [
+        "account_ids",
+        "access_tokens",
+        "selection",
+        "group_id"
+      ]
+    },
+    "AccountGroupRequest": {
+      "properties": {
+        "create_only": {
+          "default": false,
+          "title": "Create Only",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "id": {
+          "default": "",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "default": "",
+          "title": "Name",
+          "type": "string"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        },
+        "proxy": {
+          "default": "",
+          "title": "Proxy",
+          "type": "string"
+        },
+        "proxy_group_id": {
+          "default": "",
+          "title": "Proxy Group Id",
+          "type": "string"
+        }
+      },
+      "title": "AccountGroupRequest",
+      "type": "object",
+      "x-field-order": [
+        "id",
+        "name",
+        "proxy",
+        "proxy_group_id",
+        "enabled",
+        "notes",
+        "create_only"
+      ]
+    },
+    "AccountImportCleanupRequest": {
+      "properties": {
+        "access_tokens": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Access Tokens",
+          "type": "array"
+        },
+        "account_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Account Ids",
+          "type": "array"
+        },
+        "remove": {
+          "default": false,
+          "title": "Remove",
+          "type": "boolean"
+        }
+      },
+      "title": "AccountImportCleanupRequest",
+      "type": "object",
+      "x-field-order": [
+        "access_tokens",
+        "account_ids",
+        "remove"
+      ]
+    },
+    "AccountOperationRequest": {
+      "$defs": {
+        "AccountSelectionScope": {
+          "properties": {
+            "account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Account Ids",
+              "type": "array"
+            },
+            "excluded_account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Excluded Account Ids",
+              "type": "array"
+            },
+            "group_id": {
+              "default": "all",
+              "title": "Group Id",
+              "type": "string"
+            },
+            "keyword": {
+              "default": "",
+              "title": "Keyword",
+              "type": "string"
+            },
+            "mode": {
+              "default": "explicit",
+              "enum": [
+                "explicit",
+                "filter",
+                "all"
+              ],
+              "title": "Mode",
+              "type": "string"
+            },
+            "status": {
+              "default": "all",
+              "title": "Status",
+              "type": "string"
+            }
+          },
+          "title": "AccountSelectionScope",
+          "type": "object",
+          "x-field-order": [
+            "mode",
+            "account_ids",
+            "excluded_account_ids",
+            "keyword",
+            "status",
+            "group_id"
+          ]
+        }
+      },
+      "properties": {
+        "access_tokens": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Access Tokens",
+          "type": "array"
+        },
+        "account_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Account Ids",
+          "type": "array"
+        },
+        "selection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AccountSelectionScope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "AccountOperationRequest",
+      "type": "object",
+      "x-field-order": [
+        "account_ids",
+        "access_tokens",
+        "selection"
+      ]
+    },
+    "AccountSelectionPreviewRequest": {
+      "$defs": {
+        "AccountSelectionScope": {
+          "properties": {
+            "account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Account Ids",
+              "type": "array"
+            },
+            "excluded_account_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Excluded Account Ids",
+              "type": "array"
+            },
+            "group_id": {
+              "default": "all",
+              "title": "Group Id",
+              "type": "string"
+            },
+            "keyword": {
+              "default": "",
+              "title": "Keyword",
+              "type": "string"
+            },
+            "mode": {
+              "default": "explicit",
+              "enum": [
+                "explicit",
+                "filter",
+                "all"
+              ],
+              "title": "Mode",
+              "type": "string"
+            },
+            "status": {
+              "default": "all",
+              "title": "Status",
+              "type": "string"
+            }
+          },
+          "title": "AccountSelectionScope",
+          "type": "object",
+          "x-field-order": [
+            "mode",
+            "account_ids",
+            "excluded_account_ids",
+            "keyword",
+            "status",
+            "group_id"
+          ]
+        }
+      },
+      "properties": {
+        "selection": {
+          "$ref": "#/$defs/AccountSelectionScope"
+        }
+      },
+      "required": [
+        "selection"
+      ],
+      "title": "AccountSelectionPreviewRequest",
+      "type": "object",
+      "x-field-order": [
+        "selection"
+      ]
+    },
+    "AccountSelectionScope": {
+      "properties": {
+        "account_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Account Ids",
+          "type": "array"
+        },
+        "excluded_account_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Excluded Account Ids",
+          "type": "array"
+        },
+        "group_id": {
+          "default": "all",
+          "title": "Group Id",
+          "type": "string"
+        },
+        "keyword": {
+          "default": "",
+          "title": "Keyword",
+          "type": "string"
+        },
+        "mode": {
+          "default": "explicit",
+          "enum": [
+            "explicit",
+            "filter",
+            "all"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "status": {
+          "default": "all",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "title": "AccountSelectionScope",
+      "type": "object",
+      "x-field-order": [
+        "mode",
+        "account_ids",
+        "excluded_account_ids",
+        "keyword",
+        "status",
+        "group_id"
+      ]
+    },
+    "AccountUpdateRequest": {
+      "properties": {
+        "access_token": {
+          "default": "",
+          "title": "Access Token",
+          "type": "string"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        },
+        "id": {
+          "default": "",
+          "title": "Id",
+          "type": "string"
+        },
+        "proxy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proxy"
+        },
+        "quota": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quota"
+        },
+        "refresh_token": {
+          "default": "",
+          "title": "Refresh Token",
+          "type": "string"
+        },
+        "source_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Type"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Type"
+        }
+      },
+      "title": "AccountUpdateRequest",
+      "type": "object",
+      "x-field-order": [
+        "id",
+        "access_token",
+        "refresh_token",
+        "type",
+        "source_type",
+        "quota",
+        "proxy",
+        "group_id"
+      ]
+    },
+    "ProxyDefaultsRequest": {
+      "$defs": {
+        "ProxyReference": {
+          "additionalProperties": false,
+          "properties": {
+            "group_id": {
+              "default": "",
+              "title": "Group Id",
+              "type": "string"
+            },
+            "mode": {
+              "enum": [
+                "direct",
+                "group",
+                "custom"
+              ],
+              "title": "Mode",
+              "type": "string"
+            },
+            "url": {
+              "default": "",
+              "title": "Url",
+              "type": "string"
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "title": "ProxyReference",
+          "type": "object",
+          "x-field-order": [
+            "mode",
+            "group_id",
+            "url"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "default_reference": {
+          "$ref": "#/$defs/ProxyReference"
+        },
+        "fallback_reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProxyReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "default_reference"
+      ],
+      "title": "ProxyDefaultsRequest",
+      "type": "object",
+      "x-field-order": [
+        "default_reference",
+        "fallback_reference"
+      ]
+    },
+    "ProxyGroupPatch": {
+      "$defs": {
+        "ProxyNodeInput": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "title": "Enabled",
+              "type": "boolean"
+            },
+            "id": {
+              "default": "",
+              "title": "Id",
+              "type": "string"
+            },
+            "image_concurrency_limit": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Image Concurrency Limit"
+            },
+            "name": {
+              "default": "",
+              "title": "Name",
+              "type": "string"
+            },
+            "notes": {
+              "default": "",
+              "title": "Notes",
+              "type": "string"
+            },
+            "url": {
+              "default": "",
+              "title": "Url",
+              "type": "string"
+            }
+          },
+          "title": "ProxyNodeInput",
+          "type": "object",
+          "x-field-order": [
+            "id",
+            "name",
+            "url",
+            "enabled",
+            "image_concurrency_limit",
+            "notes"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "create_only": {
+          "default": false,
+          "title": "Create Only",
+          "type": "boolean"
+        },
+        "enabled": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Enabled"
+        },
+        "id": {
+          "default": "",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "nodes": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/ProxyNodeInput"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Nodes"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "rotation_interval_minutes": {
+          "anyOf": [
+            {
+              "maximum": 1440,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rotation Interval Minutes"
+        },
+        "strategy": {
+          "anyOf": [
+            {
+              "enum": [
+                "request_random",
+                "time_window",
+                "round_robin"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Strategy"
+        }
+      },
+      "title": "ProxyGroupPatch",
+      "type": "object",
+      "x-field-order": [
+        "id",
+        "name",
+        "strategy",
+        "rotation_interval_minutes",
+        "enabled",
+        "notes",
+        "nodes",
+        "create_only"
+      ]
+    },
+    "ProxyGroupTestRequest": {
+      "properties": {
+        "id": {
+          "default": "",
+          "title": "Id",
+          "type": "string"
+        },
+        "node_id": {
+          "default": "",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "url": {
+          "default": "",
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "title": "ProxyGroupTestRequest",
+      "type": "object",
+      "x-field-order": [
+        "id",
+        "node_id",
+        "url"
+      ]
+    },
+    "ProxyNodeImportRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "existing_urls": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10000,
+          "title": "Existing Urls",
+          "type": "array"
+        },
+        "text": {
+          "default": "",
+          "maxLength": 1000000,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "title": "ProxyNodeImportRequest",
+      "type": "object",
+      "x-field-order": [
+        "text",
+        "existing_urls"
+      ]
+    },
+    "ProxyTestRequest": {
+      "properties": {
+        "url": {
+          "default": "",
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "title": "ProxyTestRequest",
+      "type": "object",
+      "x-field-order": [
+        "url"
+      ]
+    },
+    "SettingsPatch": {
+      "$defs": {
+        "AIReviewPatch": {
+          "additionalProperties": false,
+          "properties": {
+            "api_key": {
+              "default": "",
+              "title": "Api Key",
+              "type": "string"
+            },
+            "base_url": {
+              "default": "",
+              "title": "Base Url",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "title": "Enabled",
+              "type": "boolean"
+            },
+            "model": {
+              "default": "",
+              "title": "Model",
+              "type": "string"
+            },
+            "prompt": {
+              "default": "",
+              "title": "Prompt",
+              "type": "string"
+            }
+          },
+          "title": "AIReviewPatch",
+          "type": "object",
+          "x-field-order": [
+            "enabled",
+            "base_url",
+            "api_key",
+            "model",
+            "prompt"
+          ]
+        },
+        "BackupIncludeSettings": {
+          "additionalProperties": false,
+          "properties": {
+            "editable_files": {
+              "default": true,
+              "title": "Editable Files",
+              "type": "boolean"
+            },
+            "image_tasks": {
+              "default": true,
+              "title": "Image Tasks",
+              "type": "boolean"
+            },
+            "images": {
+              "default": false,
+              "title": "Images",
+              "type": "boolean"
+            }
+          },
+          "title": "BackupIncludeSettings",
+          "type": "object",
+          "x-field-order": [
+            "image_tasks",
+            "editable_files",
+            "images"
+          ]
+        },
+        "BackupPatch": {
+          "additionalProperties": false,
+          "properties": {
+            "access_key_id": {
+              "default": "",
+              "title": "Access Key Id",
+              "type": "string"
+            },
+            "account_id": {
+              "default": "",
+              "title": "Account Id",
+              "type": "string"
+            },
+            "bucket": {
+              "default": "",
+              "title": "Bucket",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "title": "Enabled",
+              "type": "boolean"
+            },
+            "encrypt": {
+              "default": false,
+              "title": "Encrypt",
+              "type": "boolean"
+            },
+            "include": {
+              "$ref": "#/$defs/BackupIncludeSettings"
+            },
+            "interval_minutes": {
+              "default": 360,
+              "minimum": 1,
+              "title": "Interval Minutes",
+              "type": "integer"
+            },
+            "passphrase": {
+              "default": "",
+              "title": "Passphrase",
+              "type": "string"
+            },
+            "prefix": {
+              "default": "backups",
+              "title": "Prefix",
+              "type": "string"
+            },
+            "rotation_keep": {
+              "default": 10,
+              "minimum": 0,
+              "title": "Rotation Keep",
+              "type": "integer"
+            },
+            "secret_access_key": {
+              "default": "",
+              "title": "Secret Access Key",
+              "type": "string"
+            }
+          },
+          "title": "BackupPatch",
+          "type": "object",
+          "x-field-order": [
+            "enabled",
+            "account_id",
+            "access_key_id",
+            "secret_access_key",
+            "bucket",
+            "prefix",
+            "interval_minutes",
+            "rotation_keep",
+            "encrypt",
+            "passphrase",
+            "include"
+          ]
+        },
+        "GenBoxPushPatch": {
+          "additionalProperties": false,
+          "properties": {
+            "auto_push_after_studio": {
+              "default": false,
+              "title": "Auto Push After Studio",
+              "type": "boolean"
+            },
+            "base_url": {
+              "default": "",
+              "title": "Base Url",
+              "type": "string"
+            },
+            "clear_push_key": {
+              "default": false,
+              "title": "Clear Push Key",
+              "type": "boolean"
+            },
+            "enabled": {
+              "default": false,
+              "title": "Enabled",
+              "type": "boolean"
+            },
+            "push_key": {
+              "default": "",
+              "title": "Push Key",
+              "type": "string"
+            },
+            "source_id": {
+              "default": "",
+              "title": "Source Id",
+              "type": "string"
+            },
+            "timeout_secs": {
+              "default": 20,
+              "maximum": 120,
+              "minimum": 5,
+              "title": "Timeout Secs",
+              "type": "integer"
+            }
+          },
+          "title": "GenBoxPushPatch",
+          "type": "object",
+          "x-field-order": [
+            "enabled",
+            "base_url",
+            "source_id",
+            "push_key",
+            "timeout_secs",
+            "auto_push_after_studio",
+            "clear_push_key"
+          ]
+        },
+        "ImageStoragePatch": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "Enabled",
+              "type": "boolean"
+            },
+            "mode": {
+              "default": "local",
+              "enum": [
+                "local",
+                "webdav",
+                "both"
+              ],
+              "title": "Mode",
+              "type": "string"
+            },
+            "public_base_url": {
+              "default": "",
+              "title": "Public Base Url",
+              "type": "string"
+            },
+            "webdav_password": {
+              "default": "",
+              "title": "Webdav Password",
+              "type": "string"
+            },
+            "webdav_root_path": {
+              "default": "chatgpt2api/images",
+              "title": "Webdav Root Path",
+              "type": "string"
+            },
+            "webdav_url": {
+              "default": "",
+              "title": "Webdav Url",
+              "type": "string"
+            },
+            "webdav_username": {
+              "default": "",
+              "title": "Webdav Username",
+              "type": "string"
+            }
+          },
+          "title": "ImageStoragePatch",
+          "type": "object",
+          "x-field-order": [
+            "enabled",
+            "mode",
+            "webdav_url",
+            "webdav_username",
+            "webdav_password",
+            "webdav_root_path",
+            "public_base_url"
+          ]
+        },
+        "InfiniteCanvasSettings": {
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "Enabled",
+              "type": "boolean"
+            },
+            "url": {
+              "default": "https://canvas.best",
+              "title": "Url",
+              "type": "string"
+            }
+          },
+          "title": "InfiniteCanvasSettings",
+          "type": "object",
+          "x-field-order": [
+            "enabled",
+            "url"
+          ]
+        },
+        "ProxyRuntimeClearancePatch": {
+          "additionalProperties": false,
+          "properties": {
+            "cf_clearance": {
+              "default": "",
+              "title": "Cf Clearance",
+              "type": "string"
+            },
+            "cf_cookies": {
+              "default": "",
+              "title": "Cf Cookies",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "title": "Enabled",
+              "type": "boolean"
+            },
+            "flaresolverr_url": {
+              "default": "",
+              "title": "Flaresolverr Url",
+              "type": "string"
+            },
+            "mode": {
+              "default": "none",
+              "enum": [
+                "none",
+                "manual",
+                "flaresolverr"
+              ],
+              "title": "Mode",
+              "type": "string"
+            },
+            "refresh_interval": {
+              "default": 3600,
+              "minimum": 60,
+              "title": "Refresh Interval",
+              "type": "integer"
+            },
+            "timeout_sec": {
+              "default": 60,
+              "minimum": 1,
+              "title": "Timeout Sec",
+              "type": "integer"
+            },
+            "user_agent": {
+              "default": "",
+              "title": "User Agent",
+              "type": "string"
+            },
+            "warm_up_on_start": {
+              "default": false,
+              "title": "Warm Up On Start",
+              "type": "boolean"
+            }
+          },
+          "title": "ProxyRuntimeClearancePatch",
+          "type": "object",
+          "x-field-order": [
+            "enabled",
+            "mode",
+            "cf_cookies",
+            "cf_clearance",
+            "user_agent",
+            "flaresolverr_url",
+            "timeout_sec",
+            "refresh_interval",
+            "warm_up_on_start"
+          ]
+        },
+        "ProxyRuntimePatch": {
+          "additionalProperties": false,
+          "properties": {
+            "clearance": {
+              "$ref": "#/$defs/ProxyRuntimeClearancePatch"
+            },
+            "enabled": {
+              "default": false,
+              "title": "Enabled",
+              "type": "boolean"
+            },
+            "resource_proxy_url": {
+              "default": "",
+              "title": "Resource Proxy Url",
+              "type": "string"
+            },
+            "skip_ssl_verify": {
+              "default": false,
+              "title": "Skip Ssl Verify",
+              "type": "boolean"
+            }
+          },
+          "title": "ProxyRuntimePatch",
+          "type": "object",
+          "x-field-order": [
+            "enabled",
+            "resource_proxy_url",
+            "skip_ssl_verify",
+            "clearance"
+          ]
+        },
+        "ThirdPartyAppsSettings": {
+          "additionalProperties": false,
+          "properties": {
+            "infinite_canvas": {
+              "$ref": "#/$defs/InfiniteCanvasSettings"
+            }
+          },
+          "title": "ThirdPartyAppsSettings",
+          "type": "object",
+          "x-field-order": [
+            "infinite_canvas"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "account_processing_concurrency": {
+          "default": 30,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Account Processing Concurrency",
+          "type": "integer"
+        },
+        "ai_review": {
+          "$ref": "#/$defs/AIReviewPatch"
+        },
+        "auto_remove_invalid_accounts": {
+          "default": true,
+          "title": "Auto Remove Invalid Accounts",
+          "type": "boolean"
+        },
+        "auto_remove_rate_limited_accounts": {
+          "default": false,
+          "title": "Auto Remove Rate Limited Accounts",
+          "type": "boolean"
+        },
+        "backup": {
+          "$ref": "#/$defs/BackupPatch"
+        },
+        "base_url": {
+          "default": "",
+          "title": "Base Url",
+          "type": "string"
+        },
+        "console_request_timeout_secs": {
+          "default": 600,
+          "maximum": 3600,
+          "minimum": 30,
+          "title": "Console Request Timeout Secs",
+          "type": "integer"
+        },
+        "genbox_push": {
+          "$ref": "#/$defs/GenBoxPushPatch"
+        },
+        "global_system_prompt": {
+          "default": "",
+          "title": "Global System Prompt",
+          "type": "string"
+        },
+        "image_account_concurrency": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Image Account Concurrency",
+          "type": "integer"
+        },
+        "image_account_retry_enabled": {
+          "default": true,
+          "title": "Image Account Retry Enabled",
+          "type": "boolean"
+        },
+        "image_max_account_attempts": {
+          "default": 4,
+          "minimum": 2,
+          "title": "Image Max Account Attempts",
+          "type": "integer"
+        },
+        "image_poll_initial_wait_secs": {
+          "default": 5.0,
+          "maximum": 60.0,
+          "minimum": 0.0,
+          "title": "Image Poll Initial Wait Secs",
+          "type": "number"
+        },
+        "image_poll_interval_secs": {
+          "default": 5.0,
+          "maximum": 60.0,
+          "minimum": 0.5,
+          "title": "Image Poll Interval Secs",
+          "type": "number"
+        },
+        "image_poll_timeout_secs": {
+          "default": 60,
+          "minimum": 1,
+          "title": "Image Poll Timeout Secs",
+          "type": "integer"
+        },
+        "image_remove_conversation_after_result": {
+          "default": false,
+          "title": "Image Remove Conversation After Result",
+          "type": "boolean"
+        },
+        "image_retention_hours": {
+          "default": 24,
+          "minimum": 1,
+          "title": "Image Retention Hours",
+          "type": "integer"
+        },
+        "image_settle_enabled": {
+          "default": true,
+          "title": "Image Settle Enabled",
+          "type": "boolean"
+        },
+        "image_settle_secs": {
+          "default": 5.0,
+          "minimum": 0.5,
+          "title": "Image Settle Secs",
+          "type": "number"
+        },
+        "image_storage": {
+          "$ref": "#/$defs/ImageStoragePatch"
+        },
+        "image_stream_timeout_secs": {
+          "default": 80,
+          "minimum": 1,
+          "title": "Image Stream Timeout Secs",
+          "type": "integer"
+        },
+        "image_upscale_enabled": {
+          "default": false,
+          "title": "Image Upscale Enabled",
+          "type": "boolean"
+        },
+        "image_upscale_engine": {
+          "default": "sharp_lanczos3",
+          "enum": [
+            "sharp_lanczos3",
+            "pillow_lanczos"
+          ],
+          "title": "Image Upscale Engine",
+          "type": "string"
+        },
+        "log_levels": {
+          "items": {
+            "enum": [
+              "debug",
+              "info",
+              "warning",
+              "error"
+            ],
+            "type": "string"
+          },
+          "title": "Log Levels",
+          "type": "array"
+        },
+        "log_retention_hours": {
+          "default": 24,
+          "minimum": 1,
+          "title": "Log Retention Hours",
+          "type": "integer"
+        },
+        "proxy_runtime": {
+          "$ref": "#/$defs/ProxyRuntimePatch"
+        },
+        "refresh_account_interval_minute": {
+          "default": 5,
+          "minimum": 1,
+          "title": "Refresh Account Interval Minute",
+          "type": "integer"
+        },
+        "revision": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Revision",
+          "type": "string"
+        },
+        "sensitive_words": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Sensitive Words",
+          "type": "array"
+        },
+        "third_party_apps": {
+          "$ref": "#/$defs/ThirdPartyAppsSettings"
+        }
+      },
+      "required": [
+        "revision"
+      ],
+      "title": "SettingsPatch",
+      "type": "object",
+      "x-field-order": [
+        "proxy_runtime",
+        "base_url",
+        "refresh_account_interval_minute",
+        "image_retention_hours",
+        "log_retention_hours",
+        "console_request_timeout_secs",
+        "image_poll_timeout_secs",
+        "image_stream_timeout_secs",
+        "image_poll_initial_wait_secs",
+        "image_poll_interval_secs",
+        "image_account_concurrency",
+        "account_processing_concurrency",
+        "image_account_retry_enabled",
+        "image_upscale_enabled",
+        "image_upscale_engine",
+        "image_max_account_attempts",
+        "image_remove_conversation_after_result",
+        "image_settle_enabled",
+        "image_settle_secs",
+        "auto_remove_invalid_accounts",
+        "auto_remove_rate_limited_accounts",
+        "log_levels",
+        "global_system_prompt",
+        "sensitive_words",
+        "ai_review",
+        "image_storage",
+        "genbox_push",
+        "backup",
+        "third_party_apps",
+        "revision"
+      ]
+    },
+    "UserKeyCreateRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "default": "",
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "title": "UserKeyCreateRequest",
+      "type": "object",
+      "x-field-order": [
+        "name"
+      ]
+    },
+    "UserKeyUpdateRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Enabled"
+        },
+        "key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Key"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        }
+      },
+      "title": "UserKeyUpdateRequest",
+      "type": "object",
+      "x-field-order": [
+        "name",
+        "enabled",
+        "key"
+      ]
+    }
+  },
+  "sensitive": [
+    "ai_review.api_key",
+    "image_storage.webdav_password",
+    "genbox_push.push_key",
+    "backup.secret_access_key",
+    "backup.passphrase",
+    "proxy_runtime.clearance.cf_cookies",
+    "proxy_runtime.clearance.cf_clearance"
+  ]
+}

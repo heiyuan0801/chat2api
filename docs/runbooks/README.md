@@ -10,6 +10,7 @@ Status: current
 | 操作 | 文档 |
 | --- | --- |
 | Docker 与源码部署、备份和升级 | [`../deployment.md`](../deployment.md) |
+| Go 独立构建、PostgreSQL/Redis 备份恢复、回滚和灰度准备 | [`go-release.md`](go-release.md) |
 
 ## 编写要求
 

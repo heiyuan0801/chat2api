@@ -27,6 +27,14 @@
 
 <p align="center"><strong>QQ Group: 1005859624</strong></p>
 
+## Go build candidate
+
+The Go backend retains the Vue frontend and API/data formats, with a separate
+Dockerfile/Compose deployment using PostgreSQL and Redis. See the
+[Go operations runbook](docs/runbooks/go-release.md) for builds, backup/restore,
+rollback and canary preparation. Python deployment remains available;
+successful builds do not imply production cutover.
+
 > [!IMPORTANT]
 > `v3.0.0` is a new release baseline. The remote `main` history has been consolidated, and older source history, Git tags, releases, and container images are no longer maintained as part of the current release line. Version 3.0 uses a new Application Database and cannot read the distributed storage used by 2.x directly. Reconfigure the service or re-import accounts after upgrading.
 

@@ -26,6 +26,37 @@ flowchart LR
 router in [`../../web-vue/src/router/routes.ts`](../../web-vue/src/router/routes.ts)
 assembles the browser routes.
 
+The separate [`go-backend`](../../go-backend/go.mod) module contains a CLI
+upstream probe and an independently invoked Go control-plane rehearsal server.
+[ADR 0006](../adr/0006-go-control-plane-rehearsal.md) extends
+[ADR 0005](../adr/0005-isolate-go-prototype-and-preserve-contracts.md) with explicit
+Application Database access for accounts, User Keys, settings, account groups
+and proxy configuration. It does not change production routing or introduce
+another persistence owner. The [control-plane guide](../go-control-plane.md)
+records its native route coverage, verification and remaining stages.
+[ADR 0007](../adr/0007-go-public-execution-and-file-task-ownership.md) and the
+[public-execution guide](../go-public-execution.md) extend rehearsal with native
+public protocols, durable file-backed tasks/assets and independent final SQL
+Call Records, enabled only by an explicit isolated data directory.
+[ADR 0008](../adr/0008-go-remaining-domain-repositories-and-operations.md) and the
+[remaining-operations guide](../go-remaining-operations.md) complete native
+management, imports, gallery/files, observability, backup/cleanup and local Go
+update packaging while preserving those independent owners. No production
+traffic or scheduler cutover is implied.
+
+The explicit `Dockerfile.go` and `docker-compose.go.yml` assemble that native
+server with the unchanged Vue build, PostgreSQL 18 and disposable Redis text
+cache. `deploy/go-entrypoint.sh` owns container startup and refuses incomplete
+restores; `deploy/go-ops.sh` owns quiesced operational backup, empty-target
+restore and image rollback. `.github/workflows/go-verify.yml` owns clean-source
+verification/downloadable build artifacts, reused by the tag-gated release
+workflow. See the [release runbook](../runbooks/go-release.md).
+
+[ADR 0009](../adr/0009-optional-shared-text-cache.md) adds an explicitly configured
+Redis adapter for disposable successful public text responses. PostgreSQL remains
+the structured domain store; image task/catalog files and process-local worker
+ownership do not move to Redis. See the [live-verification guide](../go-live-verification.md).
+
 ## Authority boundaries
 
 | Concern | Authoritative owner | Consumers |

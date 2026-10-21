@@ -1,0 +1,947 @@
+{
+  "RAW_DIAGNOSTIC_FIELDS": [
+    "error",
+    "raw_error",
+    "upstream_error",
+    "upstream_message"
+  ],
+  "CANONICAL_FAILURE_FIELDS": [
+    "failure_code",
+    "failure_scope",
+    "failure_capability",
+    "failure_retryable",
+    "failure_account_failure",
+    "failure_retry_after",
+    "status_code",
+    "error_type"
+  ],
+  "CALL_FAILURE_FIELDS": [
+    "failure_code",
+    "failure_scope",
+    "failure_capability",
+    "failure_retryable",
+    "failure_account_failure",
+    "failure_retry_after",
+    "status_code",
+    "error_type",
+    "public_error",
+    "account_failure",
+    "error",
+    "raw_error",
+    "upstream_error",
+    "upstream_message"
+  ],
+  "STAGE_LABELS": {
+    "handler_submitted": "等待入口",
+    "handler_started": "入口执行",
+    "stream_first_item": "读取首包",
+    "image_getting_account": "等待账号",
+    "image_account_lookup": "等待账号",
+    "image_account_wait_slow": "等待账号",
+    "image_egress_waiting": "等待出口",
+    "image_egress_ready": "出口就绪",
+    "image_uploading": "上传图片",
+    "image_bootstrapping": "初始化上游",
+    "image_getting_token": "获取令牌",
+    "image_preparing_conversation": "准备会话",
+    "image_starting_generation": "等待上游首包",
+    "image_generating": "上游生成中",
+    "image_stream_failed": "上游断流",
+    "image_attempt_failed": "尝试失败",
+    "image_cross_account_retry": "切换账号",
+    "image_egress_fallback_retry": "切换备用出口",
+    "image_stream_resolve_start": "等待图片结果",
+    "image_resolve_done": "图片地址就绪",
+    "image_resolve_failed": "结果获取失败",
+    "image_text_reply": "上游文本回复",
+    "image_download_done": "下载图片",
+    "image_download_failed": "下载失败",
+    "image_codex_response_done": "Codex 响应",
+    "image_single_stream_done": "生成返回",
+    "image_single_done": "单图完成",
+    "image_local_rejected": "本地拒绝/繁忙",
+    "completed": "完成",
+    "rate_limited": "限流",
+    "failed": "失败"
+  },
+  "ACTIVE_STAGE_GROUPS": {
+    "handler_submitted": "等待入口",
+    "handler_started": "等待入口",
+    "stream_first_item": "等待入口",
+    "image_getting_account": "等待账号",
+    "image_account_lookup": "等待账号",
+    "image_account_wait_slow": "等待账号",
+    "image_egress_waiting": "等待出口",
+    "image_egress_ready": "等待出口",
+    "image_uploading": "上游准备",
+    "image_bootstrapping": "上游准备",
+    "image_getting_token": "上游准备",
+    "image_preparing_conversation": "上游准备",
+    "image_starting_generation": "上游准备",
+    "image_generating": "上游生成中",
+    "image_stream_failed": "上游断流",
+    "image_attempt_failed": "尝试失败",
+    "image_cross_account_retry": "切换账号",
+    "image_egress_fallback_retry": "等待出口",
+    "image_stream_resolve_start": "等待图片结果",
+    "image_resolve_done": "获取图片地址",
+    "image_resolve_failed": "获取图片地址",
+    "image_text_reply": "上游文本回复",
+    "image_download_done": "下载图片",
+    "image_download_failed": "下载图片",
+    "image_local_rejected": "本地拒绝/繁忙"
+  },
+  "METRIC_LABELS": {
+    "handler_queue_ms": "等待入口",
+    "stream_first_queue_ms": "首包线程等待",
+    "account_wait_ms": "等待账号",
+    "egress_wait_ms": "等待出口",
+    "egress_acquire_ms": "出口租约",
+    "upload_ms": "图片上传",
+    "bootstrap_ms": "上游初始化",
+    "requirements_ms": "获取令牌",
+    "prepare_conversation_ms": "准备会话",
+    "generation_start_ms": "等待上游首包",
+    "http_dns_ms": "HTTP DNS",
+    "http_tcp_ms": "HTTP TCP",
+    "http_tls_ms": "HTTP TLS",
+    "http_wait_ms": "HTTP 等待",
+    "http_ttfb_ms": "HTTP 首包",
+    "http_total_ms": "HTTP 总耗时",
+    "sse_first_event_ms": "SSE 首事件",
+    "sse_max_gap_ms": "SSE 最大空窗",
+    "sse_last_gap_ms": "SSE 收尾空窗",
+    "sse_stream_ms": "SSE 流耗时",
+    "conversation_stream_ms": "上游生成中",
+    "stream_error_ms": "上游断流",
+    "poll_wait_ms": "等待图片结果",
+    "poll_request_ms": "查询图片结果",
+    "resolve_ms": "结果处理",
+    "download_ms": "图片下载",
+    "response_ms": "Codex 响应",
+    "stream_ms": "单图生成流",
+    "total_ms": "单图总耗时"
+  },
+  "MONITOR_SCHEMA_VERSION": 1,
+  "ENTRY_QUEUE_METRIC_KEYS": [
+    "handler_queue_ms",
+    "stream_first_queue_ms"
+  ],
+  "DIGEST_METRIC_PAIRS": [
+    [
+      "等待入口",
+      "handler_queue_ms"
+    ],
+    [
+      "首包",
+      "stream_first_queue_ms"
+    ],
+    [
+      "等待账号",
+      "account_wait_ms"
+    ],
+    [
+      "等待出口",
+      "egress_wait_ms"
+    ],
+    [
+      "出口租约",
+      "egress_acquire_ms"
+    ],
+    [
+      "上传",
+      "upload_ms"
+    ],
+    [
+      "初始化",
+      "bootstrap_ms"
+    ],
+    [
+      "令牌",
+      "requirements_ms"
+    ],
+    [
+      "准备",
+      "prepare_conversation_ms"
+    ],
+    [
+      "启动",
+      "generation_start_ms"
+    ],
+    [
+      "HTTP首包",
+      "http_ttfb_ms"
+    ],
+    [
+      "HTTP等待",
+      "http_wait_ms"
+    ],
+    [
+      "SSE首事件",
+      "sse_first_event_ms"
+    ],
+    [
+      "SSE空窗",
+      "sse_max_gap_ms"
+    ],
+    [
+      "上游生成",
+      "conversation_stream_ms"
+    ],
+    [
+      "上游断流",
+      "stream_error_ms"
+    ],
+    [
+      "等待结果",
+      "poll_wait_ms"
+    ],
+    [
+      "查询结果",
+      "poll_request_ms"
+    ],
+    [
+      "结果处理",
+      "resolve_ms"
+    ],
+    [
+      "下载",
+      "download_ms"
+    ]
+  ],
+  "SLOW_METRIC_PAIRS": [
+    [
+      "handler_queue_ms",
+      "等待入口"
+    ],
+    [
+      "stream_first_queue_ms",
+      "首包"
+    ],
+    [
+      "account_wait_ms",
+      "等待账号"
+    ],
+    [
+      "egress_wait_ms",
+      "等待出口"
+    ],
+    [
+      "egress_acquire_ms",
+      "出口租约"
+    ],
+    [
+      "upload_ms",
+      "上传"
+    ],
+    [
+      "bootstrap_ms",
+      "初始化"
+    ],
+    [
+      "requirements_ms",
+      "令牌"
+    ],
+    [
+      "prepare_conversation_ms",
+      "准备"
+    ],
+    [
+      "generation_start_ms",
+      "启动"
+    ],
+    [
+      "http_dns_ms",
+      "HTTP DNS"
+    ],
+    [
+      "http_tcp_ms",
+      "HTTP TCP"
+    ],
+    [
+      "http_tls_ms",
+      "HTTP TLS"
+    ],
+    [
+      "http_wait_ms",
+      "HTTP 等待"
+    ],
+    [
+      "http_ttfb_ms",
+      "HTTP 首包"
+    ],
+    [
+      "sse_first_event_ms",
+      "SSE 首事件"
+    ],
+    [
+      "sse_max_gap_ms",
+      "SSE 最大空窗"
+    ],
+    [
+      "sse_last_gap_ms",
+      "SSE 收尾空窗"
+    ],
+    [
+      "conversation_stream_ms",
+      "上游生成"
+    ],
+    [
+      "stream_error_ms",
+      "上游断流"
+    ],
+    [
+      "poll_wait_ms",
+      "等待结果"
+    ],
+    [
+      "poll_request_ms",
+      "查询结果"
+    ],
+    [
+      "resolve_ms",
+      "结果处理"
+    ],
+    [
+      "download_ms",
+      "下载"
+    ],
+    [
+      "response_ms",
+      "响应整理"
+    ]
+  ],
+  "EVENT_METRIC_PAIRS": [
+    [
+      "等待入口",
+      "handler_queue_ms"
+    ],
+    [
+      "首包",
+      "stream_first_queue_ms"
+    ],
+    [
+      "等待账号",
+      "account_wait_ms"
+    ],
+    [
+      "等待出口",
+      "egress_wait_ms"
+    ],
+    [
+      "上传",
+      "upload_ms"
+    ],
+    [
+      "初始化",
+      "bootstrap_ms"
+    ],
+    [
+      "令牌",
+      "requirements_ms"
+    ],
+    [
+      "准备",
+      "prepare_conversation_ms"
+    ],
+    [
+      "启动",
+      "generation_start_ms"
+    ],
+    [
+      "HTTP首包",
+      "http_ttfb_ms"
+    ],
+    [
+      "HTTP等待",
+      "http_wait_ms"
+    ],
+    [
+      "SSE首事件",
+      "sse_first_event_ms"
+    ],
+    [
+      "SSE空窗",
+      "sse_max_gap_ms"
+    ],
+    [
+      "上游生成",
+      "conversation_stream_ms"
+    ],
+    [
+      "上游断流",
+      "stream_error_ms"
+    ],
+    [
+      "等待结果",
+      "poll_wait_ms"
+    ],
+    [
+      "查询结果",
+      "poll_request_ms"
+    ],
+    [
+      "结果处理",
+      "resolve_ms"
+    ],
+    [
+      "下载",
+      "download_ms"
+    ],
+    [
+      "响应整理",
+      "response_ms"
+    ]
+  ],
+  "LINEAR_STAGE_KEYS": [
+    "account_wait_ms",
+    "egress_wait_ms",
+    "upload_ms",
+    "bootstrap_ms",
+    "requirements_ms",
+    "prepare_conversation_ms",
+    "generation_start_ms",
+    "conversation_stream_ms",
+    "stream_error_ms",
+    "poll_wait_ms",
+    "poll_request_ms",
+    "resolve_ms",
+    "download_ms",
+    "response_ms"
+  ],
+  "RECORD_FIELDS": [
+    "account_email",
+    "account_failure",
+    "attempt_count",
+    "call_id",
+    "conversation_id",
+    "duration_ms",
+    "egress_key",
+    "egress_label",
+    "egress_mode",
+    "elapsed_ms",
+    "ended_at",
+    "endpoint",
+    "error",
+    "error_type",
+    "failure_account_failure",
+    "failure_capability",
+    "failure_code",
+    "failure_retry_after",
+    "failure_retryable",
+    "failure_scope",
+    "has_proxy",
+    "image_account_attempt",
+    "image_account_max_attempts",
+    "image_account_switch_count",
+    "image_egress_limit",
+    "image_failed_count",
+    "image_requested_count",
+    "image_result_status",
+    "image_succeeded_count",
+    "key_name",
+    "local_reason",
+    "model",
+    "outcome",
+    "previous_account_email",
+    "proxy_group_id",
+    "proxy_hash",
+    "proxy_node_id",
+    "proxy_node_name",
+    "proxy_source",
+    "public_error",
+    "raw_error",
+    "recovered_after_switch",
+    "role",
+    "stage",
+    "stage_elapsed_ms",
+    "stage_label",
+    "started_at",
+    "status",
+    "status_code",
+    "summary",
+    "switch_count",
+    "switched_account",
+    "updated_at",
+    "upstream_error",
+    "upstream_message",
+    "url_count"
+  ],
+  "IMAGE_FIELDS": [
+    "account_attempt",
+    "account_email",
+    "account_failure",
+    "account_switch_count",
+    "egress_key",
+    "egress_label",
+    "egress_mode",
+    "error",
+    "error_type",
+    "failure_account_failure",
+    "failure_capability",
+    "failure_code",
+    "failure_retry_after",
+    "failure_retryable",
+    "failure_scope",
+    "has_proxy",
+    "image_egress_limit",
+    "index",
+    "local_reason",
+    "max_account_attempts",
+    "previous_account_email",
+    "proxy_group_id",
+    "proxy_hash",
+    "proxy_node_id",
+    "proxy_node_name",
+    "proxy_source",
+    "public_error",
+    "raw_error",
+    "returned_message",
+    "returned_result",
+    "stage",
+    "stage_label",
+    "status",
+    "status_code",
+    "switched_account",
+    "total",
+    "updated_at",
+    "upstream_error",
+    "upstream_message"
+  ],
+  "EVENT_FIELDS": [
+    "account_email",
+    "account_failure",
+    "account_switch_count",
+    "account_wait_ms",
+    "attempt",
+    "bootstrap_ms",
+    "call_id",
+    "conversation_stream_ms",
+    "download_ms",
+    "egress_key",
+    "egress_label",
+    "egress_mode",
+    "egress_wait_ms",
+    "error",
+    "error_type",
+    "event",
+    "failure_account_failure",
+    "failure_capability",
+    "failure_code",
+    "failure_retry_after",
+    "failure_retryable",
+    "failure_scope",
+    "generation_start_ms",
+    "handler_queue_ms",
+    "has_proxy",
+    "http_dns_ms",
+    "http_tcp_ms",
+    "http_tls_ms",
+    "http_total_ms",
+    "http_ttfb_ms",
+    "http_wait_ms",
+    "image_egress_limit",
+    "index",
+    "label",
+    "local_reason",
+    "max_account_attempts",
+    "model",
+    "poll_request_ms",
+    "poll_wait_ms",
+    "prepare_conversation_ms",
+    "previous_account_email",
+    "proxy_group_id",
+    "proxy_hash",
+    "proxy_node_id",
+    "proxy_node_name",
+    "proxy_source",
+    "public_error",
+    "raw_error",
+    "requirements_ms",
+    "resolve_ms",
+    "response_ms",
+    "sse_event_count",
+    "sse_first_event_ms",
+    "sse_last_gap_ms",
+    "sse_max_gap_ms",
+    "sse_stream_ms",
+    "status",
+    "status_code",
+    "stream_error_ms",
+    "stream_first_queue_ms",
+    "stream_ms",
+    "switched_account",
+    "time",
+    "total",
+    "total_ms",
+    "upload_ms",
+    "upstream_error",
+    "upstream_message"
+  ],
+  "INTEGER_FIELDS": [
+    "account_attempt",
+    "account_switch_count",
+    "attempt",
+    "attempt_count",
+    "duration_ms",
+    "elapsed_ms",
+    "failure_retry_after",
+    "image_account_attempt",
+    "image_account_max_attempts",
+    "image_account_switch_count",
+    "image_egress_limit",
+    "image_failed_count",
+    "image_requested_count",
+    "image_succeeded_count",
+    "index",
+    "max_account_attempts",
+    "sse_event_count",
+    "stage_elapsed_ms",
+    "status_code",
+    "switch_count",
+    "total",
+    "url_count"
+  ],
+  "BOOLEAN_FIELDS": [
+    "account_failure",
+    "failure_account_failure",
+    "failure_retryable",
+    "has_proxy",
+    "recovered_after_switch",
+    "returned_message",
+    "returned_result",
+    "switched_account"
+  ],
+  "DIAGNOSTIC_GROUPS": [
+    {
+      "key": "overview",
+      "title": "实时概览",
+      "meta": "窗口与结果",
+      "items": [
+        {
+          "key": "active",
+          "label": "当前并发",
+          "meta": "线程容量 0",
+          "tone": "muted"
+        },
+        {
+          "key": "completed",
+          "label": "完成窗口",
+          "meta": "",
+          "tone": "muted"
+        },
+        {
+          "key": "success",
+          "label": "成功数",
+          "meta": "窗口内成功",
+          "tone": "success"
+        },
+        {
+          "key": "failed",
+          "label": "失败数",
+          "meta": "窗口内失败",
+          "tone": "muted"
+        },
+        {
+          "key": "text_review",
+          "label": "文本数",
+          "meta": "返回文本，不计失败",
+          "tone": "warning"
+        },
+        {
+          "key": "success_rate",
+          "label": "成功率",
+          "meta": "不含文本",
+          "tone": "success"
+        },
+        {
+          "key": "slow_total",
+          "label": "慢请求",
+          "meta": "总耗时超过 120 秒",
+          "tone": "muted"
+        },
+        {
+          "key": "rate_limited",
+          "label": "限流数",
+          "meta": "窗口内限流",
+          "tone": "warning"
+        }
+      ]
+    },
+    {
+      "key": "entry_egress",
+      "title": "入口与出口",
+      "meta": "本地线程、请求入口、代理出口",
+      "items": [
+        {
+          "key": "thread_capacity",
+          "label": "线程容量",
+          "meta": "入口执行上限",
+          "tone": "muted"
+        },
+        {
+          "key": "handler_queue_ms",
+          "label": "入口排队 P95",
+          "meta": "线程容量 0 · 慢 0",
+          "tone": "info"
+        },
+        {
+          "key": "stream_first_queue_ms",
+          "label": "首包排队 P95",
+          "meta": "慢 0",
+          "tone": "info"
+        },
+        {
+          "key": "egress_wait_ms",
+          "label": "出口等待 P95",
+          "meta": "暂无活跃出口",
+          "tone": "info"
+        },
+        {
+          "key": "egress_acquire_ms",
+          "label": "出口租约 P95",
+          "meta": "获取图片出口",
+          "tone": "info"
+        },
+        {
+          "key": "active_egress",
+          "label": "活跃出口",
+          "meta": "暂无活跃出口",
+          "tone": "info"
+        },
+        {
+          "key": "egress_wait_slow",
+          "label": "出口等待慢请求",
+          "meta": "等待超过 1 秒",
+          "tone": "muted"
+        },
+        {
+          "key": "local_busy",
+          "label": "本地拒绝/繁忙",
+          "meta": "无号 / 并发 / 策略",
+          "tone": "muted"
+        }
+      ]
+    },
+    {
+      "key": "account_switch",
+      "title": "账号与切换",
+      "meta": "账号等待、切换动作、恢复结果",
+      "items": [
+        {
+          "key": "account_wait_ms",
+          "label": "账号等待 P95",
+          "meta": "账号池筛选",
+          "tone": "info"
+        },
+        {
+          "key": "account_wait_slow",
+          "label": "账号等待慢请求",
+          "meta": "等待超过 5 秒",
+          "tone": "muted"
+        },
+        {
+          "key": "account_switch_requests",
+          "label": "切号请求",
+          "meta": "发生过账号切换",
+          "tone": "muted"
+        },
+        {
+          "key": "account_switches",
+          "label": "切换次数",
+          "meta": "窗口内实际切换",
+          "tone": "muted"
+        },
+        {
+          "key": "account_switch_success",
+          "label": "切号后成功",
+          "meta": "暂无切号请求",
+          "tone": "muted"
+        },
+        {
+          "key": "account_switch_recovery_rate",
+          "label": "切号恢复率",
+          "meta": "切号后成功 / 切号请求",
+          "tone": "muted"
+        },
+        {
+          "key": "account_switch_unrecovered",
+          "label": "切号未恢复",
+          "meta": "切号后仍失败",
+          "tone": "muted"
+        },
+        {
+          "key": "account_switch_average",
+          "label": "平均切换",
+          "meta": "每个切号请求",
+          "tone": "muted"
+        }
+      ]
+    },
+    {
+      "key": "upstream_prepare",
+      "title": "上游准备",
+      "meta": "上传、令牌、会话、建连",
+      "items": [
+        {
+          "key": "upload_ms",
+          "label": "图片上传",
+          "meta": "参考图上传",
+          "tone": "muted"
+        },
+        {
+          "key": "bootstrap_ms",
+          "label": "上游初始化",
+          "meta": "ChatGPT 会话",
+          "tone": "muted"
+        },
+        {
+          "key": "requirements_ms",
+          "label": "令牌获取",
+          "meta": "requirements / token",
+          "tone": "muted"
+        },
+        {
+          "key": "prepare_conversation_ms",
+          "label": "会话准备",
+          "meta": "准备图片会话",
+          "tone": "muted"
+        },
+        {
+          "key": "generation_start_ms",
+          "label": "启动生成",
+          "meta": "提交上游请求",
+          "tone": "muted"
+        },
+        {
+          "key": "http_dns_ms",
+          "label": "DNS 解析",
+          "meta": "HTTP DNS P95",
+          "tone": "info"
+        },
+        {
+          "key": "http_tcp_ms",
+          "label": "TCP 连接",
+          "meta": "HTTP TCP P95",
+          "tone": "info"
+        },
+        {
+          "key": "http_tls_ms",
+          "label": "TLS 握手",
+          "meta": "HTTP TLS P95",
+          "tone": "info"
+        }
+      ]
+    },
+    {
+      "key": "generation_transport",
+      "title": "生成与传输",
+      "meta": "HTTP、SSE、上游生成、断流",
+      "items": [
+        {
+          "key": "http_wait_ms",
+          "label": "HTTP 等待",
+          "meta": "发出请求到首包",
+          "tone": "info"
+        },
+        {
+          "key": "http_ttfb_ms",
+          "label": "HTTP 首包",
+          "meta": "请求开始到首包",
+          "tone": "info"
+        },
+        {
+          "key": "sse_first_event_ms",
+          "label": "SSE 首事件",
+          "meta": "连接后首个事件",
+          "tone": "info"
+        },
+        {
+          "key": "sse_max_gap_ms",
+          "label": "SSE 最大空窗",
+          "meta": "两次事件最大间隔",
+          "tone": "info"
+        },
+        {
+          "key": "sse_last_gap_ms",
+          "label": "SSE 收尾空窗",
+          "meta": "最后事件到结束",
+          "tone": "info"
+        },
+        {
+          "key": "conversation_stream_ms",
+          "label": "上游生成",
+          "meta": "会话流响应",
+          "tone": "success"
+        },
+        {
+          "key": "stream_error_requests",
+          "label": "断流请求",
+          "meta": "窗口内发生断流",
+          "tone": "muted"
+        },
+        {
+          "key": "stream_error_ms",
+          "label": "断流耗时 P95",
+          "meta": "HTTP2 / SSE",
+          "tone": "muted"
+        }
+      ]
+    },
+    {
+      "key": "result_delivery",
+      "title": "结果与交付",
+      "meta": "总耗时、轮询、解析、下载",
+      "items": [
+        {
+          "key": "average",
+          "label": "平均总耗时",
+          "meta": "窗口均值",
+          "tone": "info"
+        },
+        {
+          "key": "p95",
+          "label": "P95 总耗时",
+          "meta": "慢请求参考",
+          "tone": "info"
+        },
+        {
+          "key": "poll_wait_ms",
+          "label": "等待结果",
+          "meta": "间隔 / 退避",
+          "tone": "warning"
+        },
+        {
+          "key": "poll_request_ms",
+          "label": "查询结果",
+          "meta": "task / conversation",
+          "tone": "info"
+        },
+        {
+          "key": "resolve_ms",
+          "label": "结果处理",
+          "meta": "file ID / 下载地址",
+          "tone": "warning"
+        },
+        {
+          "key": "download_ms",
+          "label": "图片下载",
+          "meta": "下载并返回",
+          "tone": "muted"
+        },
+        {
+          "key": "response_ms",
+          "label": "响应整理",
+          "meta": "整理 API 响应",
+          "tone": "muted"
+        },
+        {
+          "key": "stream_ms",
+          "label": "协议处理 P95",
+          "meta": "图片协议完整处理",
+          "tone": "info"
+        }
+      ]
+    }
+  ]
+}

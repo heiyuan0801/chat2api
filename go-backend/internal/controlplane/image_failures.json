@@ -1,0 +1,203 @@
+{
+  "policies": {
+    "upstream_error": {
+      "failure_scope": "transient",
+      "failure_capability": null,
+      "failure_retryable": false,
+      "status_code": 502,
+      "error_type": "server_error",
+      "failure_account_failure": true
+    },
+    "conversation_not_ready": {
+      "failure_scope": "transient",
+      "failure_capability": "image_generation",
+      "failure_retryable": true,
+      "status_code": 409,
+      "error_type": "server_error",
+      "failure_account_failure": false
+    },
+    "internal_error": {
+      "failure_scope": "internal",
+      "failure_capability": null,
+      "failure_retryable": false,
+      "status_code": 500,
+      "error_type": "server_error",
+      "failure_account_failure": false
+    },
+    "upstream_unavailable": {
+      "failure_scope": "transient",
+      "failure_capability": null,
+      "failure_retryable": true,
+      "status_code": 502,
+      "error_type": "server_error",
+      "failure_account_failure": true
+    },
+    "upstream_connection_failed": {
+      "failure_scope": "transient",
+      "failure_capability": null,
+      "failure_retryable": true,
+      "status_code": 502,
+      "error_type": "server_error",
+      "failure_account_failure": true
+    },
+    "upstream_connection_timeout": {
+      "failure_scope": "transient",
+      "failure_capability": null,
+      "failure_retryable": true,
+      "status_code": 504,
+      "error_type": "server_error",
+      "failure_account_failure": true
+    },
+    "upstream_rate_limited": {
+      "failure_scope": "transient",
+      "failure_capability": "image_generation",
+      "failure_retryable": false,
+      "status_code": 429,
+      "error_type": "rate_limit_error",
+      "failure_account_failure": true
+    },
+    "image_poll_timeout": {
+      "failure_scope": "transient",
+      "failure_capability": "image_generation",
+      "failure_retryable": false,
+      "status_code": 502,
+      "error_type": "server_error",
+      "failure_account_failure": true
+    },
+    "image_stream_timeout": {
+      "failure_scope": "transient",
+      "failure_capability": "image_generation",
+      "failure_retryable": false,
+      "status_code": 502,
+      "error_type": "server_error",
+      "failure_account_failure": true
+    },
+    "image_stream_interrupted": {
+      "failure_scope": "transient",
+      "failure_capability": "image_generation",
+      "failure_retryable": false,
+      "status_code": 502,
+      "error_type": "server_error",
+      "failure_account_failure": true
+    },
+    "image_tool_error": {
+      "failure_scope": "account",
+      "failure_capability": "image_generation",
+      "failure_retryable": false,
+      "status_code": 502,
+      "error_type": "server_error",
+      "failure_account_failure": true
+    },
+    "image_quota_exhausted": {
+      "failure_scope": "account",
+      "failure_capability": "image_generation",
+      "failure_retryable": false,
+      "status_code": 429,
+      "error_type": "insufficient_quota",
+      "failure_account_failure": true
+    },
+    "file_upload_throttled": {
+      "failure_scope": "account",
+      "failure_capability": "file_upload",
+      "failure_retryable": true,
+      "status_code": 429,
+      "error_type": "rate_limit_error",
+      "failure_account_failure": true
+    },
+    "auth_invalid": {
+      "failure_scope": "account",
+      "failure_capability": "auth",
+      "failure_retryable": false,
+      "status_code": 401,
+      "error_type": "authentication_error",
+      "failure_account_failure": true
+    },
+    "content_policy_violation": {
+      "failure_scope": "request",
+      "failure_capability": null,
+      "failure_retryable": false,
+      "status_code": 400,
+      "error_type": "invalid_request_error",
+      "failure_account_failure": false
+    },
+    "invalid_image_input": {
+      "failure_scope": "request",
+      "failure_capability": null,
+      "failure_retryable": false,
+      "status_code": 400,
+      "error_type": "invalid_request_error",
+      "failure_account_failure": false
+    },
+    "upstream_text_reply": {
+      "failure_scope": "request",
+      "failure_capability": null,
+      "failure_retryable": false,
+      "status_code": 400,
+      "error_type": "invalid_request_error",
+      "failure_account_failure": false
+    },
+    "no_image_generated": {
+      "failure_scope": "request",
+      "failure_capability": null,
+      "failure_retryable": false,
+      "status_code": 502,
+      "error_type": "server_error",
+      "failure_account_failure": false
+    },
+    "unsupported_model": {
+      "failure_scope": "request",
+      "failure_capability": null,
+      "failure_retryable": false,
+      "status_code": 400,
+      "error_type": "invalid_request_error",
+      "failure_account_failure": false
+    },
+    "image_download_failed": {
+      "failure_scope": "delivery",
+      "failure_capability": null,
+      "failure_retryable": false,
+      "status_code": 502,
+      "error_type": "server_error",
+      "failure_account_failure": false
+    },
+    "task_interrupted": {
+      "failure_scope": "request",
+      "failure_capability": null,
+      "failure_retryable": false,
+      "status_code": 503,
+      "error_type": "server_error",
+      "failure_account_failure": false
+    },
+    "no_available_account": {
+      "failure_scope": "transient",
+      "failure_capability": null,
+      "failure_retryable": false,
+      "status_code": 503,
+      "error_type": "server_error",
+      "failure_account_failure": false
+    },
+    "insufficient_quota": {
+      "failure_scope": "account",
+      "failure_capability": "image_generation",
+      "failure_retryable": false,
+      "status_code": 429,
+      "error_type": "insufficient_quota",
+      "failure_account_failure": false
+    }
+  },
+  "aliases": {
+    "connection_failed": "upstream_connection_failed",
+    "connection_timeout": "upstream_connection_timeout",
+    "image_stream_interrupted": "image_stream_interrupted",
+    "invalid_access_token": "auth_invalid",
+    "moderation_blocked": "content_policy_violation",
+    "quota_exhausted": "image_quota_exhausted",
+    "rate_limit_exceeded": "upstream_rate_limited",
+    "safety_blocked": "content_policy_violation",
+    "token_invalid": "auth_invalid",
+    "token_invalidated": "auth_invalid",
+    "token_revoked": "auth_invalid",
+    "unsupported_image_model": "unsupported_model",
+    "upstream_timeout": "image_poll_timeout"
+  }
+}
