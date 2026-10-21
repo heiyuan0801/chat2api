@@ -29,7 +29,7 @@
 
 本仓库提供保留原 Vue 与 API/数据格式的 Go 后端，使用独立的
 `Dockerfile.go`、`docker-compose.go.yml` 和 PostgreSQL＋Redis。
-GHCR 固定版本为 `ghcr.io/heiyuan0801/chatgpt2api-go:v3.2.3-go.1`，发布目标包含
+GHCR 固定版本为 `ghcr.io/heiyuan0801/chatgpt2api-go:v3.2.3-go.2`，发布目标包含
 Linux amd64 和 arm64；无需在服务器编译，按手册下载 Compose 并拉取启动。
 构建下载、启动、备份恢复、回滚及灰度准备见 [Go 运维手册](docs/runbooks/go-release.md)。
 原 Python 发布入口保留；Go 构建成功不代表已切换生产服务。

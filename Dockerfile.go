@@ -29,6 +29,9 @@ ENV TZ=Asia/Shanghai
 WORKDIR /app
 RUN mkdir -p /app/data /opt/chatgpt2api/web_dist \
  && chown postgres:postgres /app/data
+# The PostgreSQL base removes its temporary ca-certificates dependency.
+# Preserve Go's trusted HTTPS roots for account sync and upstream execution.
+COPY --from=go-build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=go-build /out/ /usr/local/bin/
 COPY --from=web-build /src/web-vue/dist/ /opt/chatgpt2api/web_dist/
 COPY VERSION /opt/chatgpt2api/VERSION

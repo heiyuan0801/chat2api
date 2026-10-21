@@ -16,7 +16,7 @@ PostgreSQL 18 与 Redis 7。Python 的 Dockerfile、Compose 和业务源码保�
 ## 拉取 GHCR 镜像并启动
 
 Go 专用预发布使用 `v<version>-go.<n>` 标签；当前配置固定为
-`ghcr.io/heiyuan0801/chatgpt2api-go:v3.2.3-go.1`，发布目标为 Linux amd64 和
+`ghcr.io/heiyuan0801/chatgpt2api-go:v3.2.3-go.2`，发布目标为 Linux amd64 和
 arm64。Docker 按宿主架构自动选择，不在 Compose 中固定 `platform`。
 首次发布后需在 GitHub 软件包设置中把该包设为 Public，并通过匿名拉取验证。
 
@@ -25,8 +25,8 @@ arm64。Docker 按宿主架构自动选择，不在 Compose 中固定 `platform`
 ```bash
 mkdir chat2api-go
 cd chat2api-go
-curl -fL https://raw.githubusercontent.com/heiyuan0801/chat2api/v3.2.3-go.1/docker-compose.go.yml -o docker-compose.go.yml
-curl -fL https://raw.githubusercontent.com/heiyuan0801/chat2api/v3.2.3-go.1/deploy/go.env.example -o .env.go
+curl -fL https://raw.githubusercontent.com/heiyuan0801/chat2api/v3.2.3-go.2/docker-compose.go.yml -o docker-compose.go.yml
+curl -fL https://raw.githubusercontent.com/heiyuan0801/chat2api/v3.2.3-go.2/deploy/go.env.example -o .env.go
 chmod 600 .env.go
 ```
 
@@ -37,7 +37,7 @@ chmod 600 .env.go
 文件链接。数据库与 Redis 不暴露宿主端口。
 
 ```bash
-docker pull ghcr.io/heiyuan0801/chatgpt2api-go:v3.2.3-go.1
+docker pull ghcr.io/heiyuan0801/chatgpt2api-go:v3.2.3-go.2
 docker compose --env-file .env.go -f docker-compose.go.yml config -q
 docker compose --env-file .env.go -f docker-compose.go.yml pull
 docker compose --env-file .env.go -f docker-compose.go.yml up -d --wait postgres redis
@@ -119,6 +119,26 @@ Release、合并 Python/Go 包校验和，并推送独立的
 CI 原生包和镜像将更新检查绑定到当前 GitHub 发布仓库。独立原生打包时可用
 `CHATGPT2API_RELEASE_REPOSITORY=owner/repository` 指定来源；默认仍是上游仓库。
 不得把 Python 更新包用于 Go 受管运行目录。
+
+## 修复旧镜像的账号同步网络错误
+
+`v3.2.3-go.1` 缺少系统 HTTPS 根证书，账号与额度同步可能显示
+`network_error at account_info (HTTP 0)`；该数字表示未收到 HTTP 响应，不能据此
+判断 Token 无效或额度为零。`v3.2.3-go.2` 从 Go 构建镜像带入系统信任根，保持
+TLS 证书验证开启。CI 检查运行时证书文件存在且包含 PEM 证书。
+
+已有部署保留原环境文件、数据库与数据卷，只更新 `.env.go` 中的
+`CHATGPT2API_GO_IMAGE`，然后执行：
+
+```bash
+docker compose --env-file .env.go -f docker-compose.go.yml pull app
+docker compose --env-file .env.go -f docker-compose.go.yml up -d --no-build --wait app
+```
+
+不重新初始化已有数据库。进入账号页，仅对受影响账号执行同步，核对远程检查
+成功及实际上游返回的图片额度。若仍失败，继续检查容器 DNS、出站网络和代理；
+不关闭 TLS 验证，也不把网络错误当成账号失效删除。该修复不包含生图额度赠送
+或固定额度，额度始终以上游结果为准。
 
 ## 停写备份
 

@@ -83,6 +83,10 @@ jobs:
           tags: chatgpt2api-go:ci
           cache-from: type=gha,scope=go
           cache-to: type=gha,mode=max,scope=go
+      - name: Verify runtime HTTPS trust roots
+        run: |
+          docker run --rm --entrypoint sh chatgpt2api-go:ci -ec \
+            'test -s /etc/ssl/certs/ca-certificates.crt && grep -q "BEGIN CERTIFICATE" /etc/ssl/certs/ca-certificates.crt'
       - name: Start and verify PostgreSQL/Redis deployment
         shell: bash
         run: |

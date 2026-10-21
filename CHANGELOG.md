@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 3.2.3-go.2 - 2026-10-21
+
++ [修复] Go Docker 运行时补齐 HTTPS 系统根证书，修复已导入账号同步时出现 `network_error at account_info (HTTP 0)`、无法读取图片额度的问题；CI 增加运行时证书校验，保留 TLS 验证与既有 Vue、API、数据格式。
+
 ## 3.2.3-go.1 - 2026-10-21
 
 + [新增] Go 专用预发布标签独立推送 GHCR 的 linux/amd64、linux/arm64 镜像；PostgreSQL＋Redis Compose 支持直接拉取固定版本，保留原 Vue、API 与数据格式。此版本不发布 Python 镜像或混合运行时 Release，不表示已经切换生产流量。
