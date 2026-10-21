@@ -50,7 +50,7 @@ jobs:
     uses: ./.github/workflows/go-verify.yml
 
   release-bundle:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref_name, '-go.')
     needs: [verify, verify-go]
     runs-on: ubuntu-latest
     permissions:
@@ -130,7 +130,7 @@ jobs:
             release/checksums.txt
 
   docker:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref_name, '-go.')
     needs: [verify, verify-go]
     runs-on: ubuntu-latest
     permissions:
@@ -182,7 +182,7 @@ jobs:
 
   docker-go:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    needs: [verify, verify-go]
+    needs: [verify-go]
     runs-on: ubuntu-latest
     permissions:
       contents: read

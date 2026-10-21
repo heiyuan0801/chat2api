@@ -35,6 +35,10 @@ Redis is disposable successful-text cache and is not part of the backup.
   pull requests and manual workflow invocation perform verification only. The
   subsequent explicit user request authorizes verification-only branch pushes
   to `heiyuan0801/chat2api` and temporary downloadable Actions artifacts.
+- The subsequently authorized GHCR publication uses a matching `v*-go.*`
+  prerelease tag for Go-only images, skipping Python images and mixed-runtime
+  Releases. Normal `v*` tags retain the combined release path. Deployment uses
+  the existing Compose with a pinned registry image and no source build.
 - Verify backup/restore and binary/image rollback on isolated synthetic data.
   Target-host acceptance, real vendor behavior, publication and production
   traffic switching remain separately reported gates.

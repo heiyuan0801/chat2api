@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-+ [新增] Go 独立 Docker、PostgreSQL 18＋Redis Compose 和干净源码 CI，提供四个平台原生包及验证镜像归档；停写备份、空目标恢复、失败启动保护与镜像回退保留既有 API、Vue 和 SQL/文件格式，正式发布与生产切流仍需单独授权。
+## 3.2.3-go.1 - 2026-10-21
+
++ [新增] Go 专用预发布标签独立推送 GHCR 的 linux/amd64、linux/arm64 镜像；PostgreSQL＋Redis Compose 支持直接拉取固定版本，保留原 Vue、API 与数据格式。此版本不发布 Python 镜像或混合运行时 Release，不表示已经切换生产流量。
+
++ [新增] Go 独立 Docker、PostgreSQL 18＋Redis Compose 和干净源码 CI，提供四个平台原生包及验证镜像归档；停写备份、空目标恢复、失败启动保护与镜像回退保留既有 API、Vue 和 SQL/文件格式。
 
 + [新增] Go 可选 Redis 共享文本响应缓存，复用既有缓存键、有效期和容量设置，支持流式重放，运行时缓存故障回退到原生上游执行；PostgreSQL 和图片文件持久化边界不变。
 

@@ -30,8 +30,10 @@
 ## Go build candidate
 
 The Go backend retains the Vue frontend and API/data formats, with a separate
-Dockerfile/Compose deployment using PostgreSQL and Redis. See the
-[Go operations runbook](docs/runbooks/go-release.md) for builds, backup/restore,
+Dockerfile/Compose deployment using PostgreSQL and Redis.
+The pinned GHCR image `ghcr.io/heiyuan0801/chatgpt2api-go:v3.2.3-go.1` targets
+Linux amd64 and arm64; the Compose deployment can pull it without building.
+See the [Go operations runbook](docs/runbooks/go-release.md) for builds, backup/restore,
 rollback and canary preparation. Python deployment remains available;
 successful builds do not imply production cutover.
 

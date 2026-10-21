@@ -13,7 +13,46 @@ PostgreSQL 18 与 Redis 7。Python 的 Dockerfile、Compose 和业务源码保�
 不保存图片任务，也不提供跨实例账号并发调度。不要把 Compose 扩成多个应用副本。
 容器通过编排器更换镜像；容器内的受管二进制在线安装默认关闭。
 
-## 构建与启动
+## 拉取 GHCR 镜像并启动
+
+Go 专用预发布使用 `v<version>-go.<n>` 标签；当前配置固定为
+`ghcr.io/heiyuan0801/chatgpt2api-go:v3.2.3-go.1`，发布目标为 Linux amd64 和
+arm64。Docker 按宿主架构自动选择，不在 Compose 中固定 `platform`。
+首次发布后需在 GitHub 软件包设置中把该包设为 Public，并通过匿名拉取验证。
+
+不需要克隆源码或在服务器编译。下载同一标签的 Compose 和配置模板：
+
+```bash
+mkdir chat2api-go
+cd chat2api-go
+curl -fL https://raw.githubusercontent.com/heiyuan0801/chat2api/v3.2.3-go.1/docker-compose.go.yml -o docker-compose.go.yml
+curl -fL https://raw.githubusercontent.com/heiyuan0801/chat2api/v3.2.3-go.1/deploy/go.env.example -o .env.go
+chmod 600 .env.go
+```
+
+编辑 `.env.go`，把认证密钥、PostgreSQL 密码、Redis 密码三个 `replace_with_...`
+占位值替换为各自独立的随机值，可用 `openssl rand -hex 32` 生成。默认仅监听
+`127.0.0.1:3001`；需要直接远程访问时，将 `CHATGPT2API_GO_BIND` 改为
+`0.0.0.0`。设置 `CHATGPT2API_BASE_URL` 为客户端可访问的地址，以生成图片和
+文件链接。数据库与 Redis 不暴露宿主端口。
+
+```bash
+docker pull ghcr.io/heiyuan0801/chatgpt2api-go:v3.2.3-go.1
+docker compose --env-file .env.go -f docker-compose.go.yml config -q
+docker compose --env-file .env.go -f docker-compose.go.yml pull
+docker compose --env-file .env.go -f docker-compose.go.yml up -d --wait postgres redis
+# 仅首次部署空数据库时执行；现有兼容数据库不重复初始化。
+docker compose --env-file .env.go -f docker-compose.go.yml run --rm --no-deps init
+docker compose --env-file .env.go -f docker-compose.go.yml up -d --no-build --wait app
+docker compose --env-file .env.go -f docker-compose.go.yml ps
+```
+
+使用 `.env.go` 中的 `CHATGPT2API_AUTH_KEY` 登录控制台。保留 `app-data` 和
+`postgres-data` 命名卷；普通停止使用 `docker compose ... down`，不带 `-v`。
+Redis 仅作可丢弃的文本缓存。备份、恢复和回滚需要完整源码中的运维脚本，
+操作步骤见下文。
+
+## 从源码构建与启动
 
 需要 Docker Engine、Buildx、Compose v2 或更新版本。运维命令使用 Bash 和
 `sha256sum` 或 `shasum`。数据库密码和 Redis 密码仅使用 URL 安全的字母、数字、
@@ -24,6 +63,7 @@ PostgreSQL 18 与 Redis 7。Python 的 Dockerfile、Compose 和业务源码保�
    ```bash
    cp deploy/go.env.example .env.go
    chmod 600 .env.go
+   # 源码构建时把 CHATGPT2API_GO_IMAGE 改为 chatgpt2api-go:local。
    # 编辑私有认证密钥、两个服务密码、项目名和端口。
    docker compose --env-file .env.go -f docker-compose.go.yml config -q
    ```
@@ -70,6 +110,11 @@ Linux/Darwin 的 amd64/arm64，并用实际 Linux 容器启动 PostgreSQL/Redis�
 Release、合并 Python/Go 包校验和，并推送独立的
 `ghcr.io/<owner>/chatgpt2api-go` 多平台镜像。PR 和手动触发不会发布，即使手动
 选择了标签。`main` 的验证构建是本次用户明确授权的规则例外。
+
+包含 `-go.` 的 Go 专用预发布标签只执行 Go 镜像发布，跳过 Python 镜像与
+混合运行时 Release；验证产物仍可在 Actions 下载。`VERSION` 必须与标签去掉
+前缀 `v` 后完全一致。镜像同时标记固定版本、无 `v` 版本和 `latest`；部署使用
+固定版本或摘要。普通 `v*` 标签保留原有 Python/Go 联合发布行为。
 
 CI 原生包和镜像将更新检查绑定到当前 GitHub 发布仓库。独立原生打包时可用
 `CHATGPT2API_RELEASE_REPOSITORY=owner/repository` 指定来源；默认仍是上游仓库。
