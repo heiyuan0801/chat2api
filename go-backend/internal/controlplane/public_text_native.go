@@ -19,7 +19,7 @@ type NativeTextExecutor struct {
 }
 
 func NewNativeTextExecutor(s *Server) TextExecutor {
-	return &NativeTextExecutor{s: s, newClient: upstream.New}
+	return NewNativeTextExecutorWithClient(s, s.NewUpstream)
 }
 
 // NewNativeTextExecutorWithClient reuses the upstream transport seam for offline

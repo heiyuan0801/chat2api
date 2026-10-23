@@ -15,22 +15,31 @@ type AccountUpstream interface {
 	Refresh(context.Context, Map, ProxyProfile) (upstream.CredentialTokens, error)
 	Synchronize(context.Context, Map, ProxyProfile) (Map, error)
 }
-type NativeAccountUpstream struct{}
+type NativeAccountUpstream struct {
+	newClient func(upstream.Config) (*upstream.Client, error)
+}
 
-func (NativeAccountUpstream) Refresh(ctx context.Context, account Map, profile ProxyProfile) (upstream.CredentialTokens, error) {
+func (n NativeAccountUpstream) client(cfg upstream.Config) (*upstream.Client, error) {
+	if n.newClient != nil {
+		return n.newClient(cfg)
+	}
+	return upstream.New(cfg)
+}
+
+func (n NativeAccountUpstream) Refresh(ctx context.Context, account Map, profile ProxyProfile) (upstream.CredentialTokens, error) {
 	cfg := upstream.Config{AccessToken: text(account["access_token"]), ProxyURL: profile.ProxyURL, Timeout: 60 * time.Second}
 	applyProxySession(profile, &cfg)
-	c, e := upstream.New(cfg)
+	c, e := n.client(cfg)
 	if e != nil {
 		return upstream.CredentialTokens{}, e
 	}
 	defer c.Close()
 	return c.RefreshCredentials(ctx, text(account["refresh_token"]))
 }
-func (NativeAccountUpstream) Synchronize(ctx context.Context, account Map, profile ProxyProfile) (Map, error) {
+func (n NativeAccountUpstream) Synchronize(ctx context.Context, account Map, profile ProxyProfile) (Map, error) {
 	cfg := upstream.Config{AccessToken: text(account["access_token"]), ProxyURL: profile.ProxyURL, Timeout: 60 * time.Second}
 	applyProxySession(profile, &cfg)
-	c, e := upstream.New(cfg)
+	c, e := n.client(cfg)
 	if e != nil {
 		return nil, e
 	}
@@ -68,16 +77,19 @@ type refreshFlight struct {
 	err    error
 }
 type Maintenance struct {
-	accounts   *Accounts
-	upstream   AccountUpstream
-	mu         sync.Mutex
-	flights    map[string]*refreshFlight
-	ctx        context.Context
-	cancel     context.CancelFunc
-	workers    sync.WaitGroup
-	verifying  map[string]bool
-	closing    bool
-	background bool
+	accounts         *Accounts
+	upstream         AccountUpstream
+	mu               sync.Mutex
+	flights          map[string]*refreshFlight
+	preflights       map[string]*preflightFlight
+	preflightCache   map[string]preflightEvidence
+	preflightChanged chan struct{}
+	ctx              context.Context
+	cancel           context.CancelFunc
+	workers          sync.WaitGroup
+	verifying        map[string]bool
+	closing          bool
+	background       bool
 }
 
 func NewMaintenance(parent context.Context, a *Accounts, remote AccountUpstream) *Maintenance {
@@ -85,7 +97,12 @@ func NewMaintenance(parent context.Context, a *Accounts, remote AccountUpstream)
 		remote = NativeAccountUpstream{}
 	}
 	ctx, cancel := context.WithCancel(parent)
-	m := &Maintenance{accounts: a, upstream: remote, flights: map[string]*refreshFlight{}, ctx: ctx, cancel: cancel, verifying: map[string]bool{}}
+	m := &Maintenance{
+		accounts: a, upstream: remote, ctx: ctx, cancel: cancel,
+		flights: map[string]*refreshFlight{}, preflights: map[string]*preflightFlight{},
+		preflightCache: map[string]preflightEvidence{}, preflightChanged: make(chan struct{}),
+		verifying: map[string]bool{},
+	}
 	a.maintenance = m
 	return m
 }
@@ -237,7 +254,9 @@ func (m *Maintenance) refresh(ctx context.Context, mid string, force bool, attem
 	flight := &refreshFlight{done: make(chan struct{})}
 	m.flights[key] = flight
 	m.mu.Unlock()
+	m.invalidatePreflight(mid)
 	result, err := m.exchange(ctx, current)
+	m.invalidatePreflight(mid)
 	m.mu.Lock()
 	flight.result, flight.err = result, err
 	delete(m.flights, key)
@@ -304,10 +323,9 @@ func (m *Maintenance) exchange(ctx context.Context, current Map) (Map, error) {
 }
 func authFailure(e error) bool { var v *upstream.Error; return errors.As(e, &v) && v.Status == 401 }
 func (m *Maintenance) Sync(ctx context.Context, mid string) (Map, error) {
+	m.invalidatePreflight(mid)
+	defer m.invalidatePreflight(mid)
 	return m.synchronize(ctx, mid, 0)
-}
-func (m *Maintenance) Preflight(ctx context.Context, mid string) (Map, error) {
-	return m.synchronize(ctx, mid, 1)
 }
 func (m *Maintenance) synchronize(ctx context.Context, mid string, mode int) (Map, error) {
 	a := m.accounts
@@ -413,6 +431,7 @@ func (m *Maintenance) synchronize(ctx context.Context, mid string, mode int) (Ma
 // rejected generation outside the request. The shared processing gate bounds
 // network work; deduplication and a queue bound prevent unbounded goroutines.
 func (m *Maintenance) scheduleVerification(ctx context.Context, current Map, event string) error {
+	m.invalidatePreflight(text(current["management_id"]))
 	mid := text(current["management_id"])
 	m.mu.Lock()
 	if m.closing {
@@ -464,6 +483,7 @@ func (m *Maintenance) scheduleVerification(ctx context.Context, current Map, eve
 func (m *Maintenance) Close(ctx context.Context) error {
 	m.mu.Lock()
 	m.closing = true
+	clear(m.preflightCache)
 	m.cancel()
 	m.mu.Unlock()
 	done := make(chan struct{})

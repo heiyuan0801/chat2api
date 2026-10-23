@@ -70,9 +70,10 @@ image model remain unchanged.
 | `internal/controlplane/auth.go` | Bearer/bootstrap identity, SHA256 User Keys, rotation, revocation and bounded cache staleness |
 | `internal/controlplane/settings.go` | Effective settings, metadata, revisioned nested patches and secret masking |
 | `internal/controlplane/proxy*.go` | Proxy Reference CRUD/imports, assignment checks, precedence and image-egress leases |
-| `internal/controlplane/account*.go`, `maintenance.go`, `pool.go` | Stable account identity, projections, local mutations, credential rotation/sync, bounded maintenance and admission leases |
+| `internal/controlplane/account*.go`, `maintenance.go`, `preflight.go`, `pool.go` | Stable account identity, projections, local mutations, credential rotation/sync, bounded maintenance, short preflight evidence/coalescing and admission leases |
 | `internal/controlplane/operations.go`, `http*.go`, `server.go` | Ephemeral progress, request validation, HTTP projections, aliases and downloads |
 | `internal/upstream/maintenance.go`, `proxy_probe.go` | Native RT exchange, account metadata calls and fixed-origin proxy probes |
+| `internal/upstream/transport_pool.go`, `controlplane/server.go` | Server-owned bounded authenticated browser transport reuse; independent per-request protocol Clients and shutdown cleanup |
 
 The optional execution layer adds the following native owners. Stage 4 extends
 them with [remaining operations](../go-remaining-operations.md) under

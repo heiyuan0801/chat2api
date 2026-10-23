@@ -737,6 +737,9 @@ func (e *NativeImageExecutor) Resume(parent context.Context, conversation string
 }
 func (a *Accounts) recordImageOutcome(ctx context.Context, snapshot Map, success, consumed bool, failure *ImageExecutionError) error {
 	mid := text(snapshot["management_id"])
+	if a.maintenance != nil {
+		defer a.maintenance.invalidatePreflight(mid)
+	}
 	var updated Map
 	_, err := a.db.Modify(ctx, "accounts", nil, func(raw []Map) ([]Map, error) {
 		items := normalizeAccounts(raw, a.now(), false)

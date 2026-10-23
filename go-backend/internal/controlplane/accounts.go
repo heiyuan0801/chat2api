@@ -259,6 +259,9 @@ func (a *Accounts) Add(ctx context.Context, payloads []Map, restore bool) (Map, 
 		e = persist(nil)
 	}
 	if e == nil {
+		if a.maintenance != nil {
+			a.maintenance.invalidatePreflight("")
+		}
 		a.cumulativeAdded(cumulative, integer(result["added"], 0))
 		a.notify()
 	}
@@ -377,6 +380,9 @@ func (a *Accounts) Update(ctx context.Context, mid string, patch, guard Map, pre
 		e = persist(nil)
 	}
 	if e == nil {
+		if a.maintenance != nil {
+			a.maintenance.invalidatePreflight(mid)
+		}
 		a.notify()
 	}
 	return result, e
@@ -431,6 +437,9 @@ func (a *Accounts) Batch(ctx context.Context, ids []string, patch Map, remove bo
 		return out, nil
 	})
 	if e == nil {
+		if a.maintenance != nil {
+			a.maintenance.invalidatePreflight("")
+		}
 		a.notify()
 	}
 	return Map{"updated_ids": orderIDs(updated, ids), "removed_ids": orderIDs(removed, ids)}, e

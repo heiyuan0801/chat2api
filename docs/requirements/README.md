@@ -32,6 +32,7 @@ requirements may move to `archive/` after links and this index are updated.
 | Requirement | Status | Scope |
 | --- | --- | --- |
 | [0001: Go backend migration](0001-go-backend-migration.md) | implementing | Retain Vue and API/data compatibility; stages 1-4 implemented locally with explicit validation limits; local Go packaging/update rehearsal included, production cutover pending; overall migration and user acceptance pending |
+| [0002: Go upstream reuse](0002-go-upstream-reuse.md) | pending-verification | Local implementation and automated verification passed; live performance and user acceptance unverified, deployment excluded |
 
 PRDs are planning evidence, never proof that the product already behaves as
 described.

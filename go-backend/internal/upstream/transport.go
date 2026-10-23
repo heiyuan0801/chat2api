@@ -163,11 +163,21 @@ func New(cfg Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	transport, err := newHTTPTransport(cfg)
+	if err != nil {
+		return nil, err
+	}
+	return NewWithTransport(cfg, transport)
+}
+
+func newHTTPTransport(cfg Config) (HTTPClient, error) {
+	idle := 90 * time.Second
 	options := []tlsclient.HttpClientOption{
 		tlsclient.WithClientProfile(profiles.MappedTLSClients[cfg.Profile]),
 		tlsclient.WithCookieJar(tlsclient.NewCookieJar()),
 		tlsclient.WithTimeoutMilliseconds(int(cfg.Timeout.Milliseconds())),
 		tlsclient.WithNotFollowRedirects(),
+		tlsclient.WithTransportOptions(&tlsclient.TransportOptions{IdleConnTimeout: &idle, MaxIdleConns: 16, MaxIdleConnsPerHost: 8}),
 	}
 	if cfg.SkipSSLVerify {
 		options = append(options, tlsclient.WithInsecureSkipVerify())
@@ -179,7 +189,7 @@ func New(cfg Config) (*Client, error) {
 	if err != nil {
 		return nil, failure("transport_configuration", "config")
 	}
-	return NewWithTransport(cfg, transport)
+	return transport, nil
 }
 
 // NewWithTransport allows fixtures or another transport adapter to exercise the

@@ -60,6 +60,7 @@ type Server struct {
 	Assets           *ImageAssets
 	ManagementHTTP   *http.Client
 	NewUpstream      func(upstream.Config) (*upstream.Client, error)
+	upstreamPool     *upstream.TransportPool
 	Tasks            *ImageTasks
 	EditableTasks    *EditableTasks
 	RemoteImports    *RemoteImports
@@ -107,7 +108,8 @@ func NewServer(ctx context.Context, db *repository.Database, options Options) (*
 	s.ManagementHTTP = options.ManagementHTTP
 	s.NewUpstream = options.UpstreamClient
 	if s.NewUpstream == nil {
-		s.NewUpstream = upstream.New
+		s.upstreamPool = upstream.NewTransportPool()
+		s.NewUpstream = s.upstreamPool.New
 	}
 	s.Clearance = NewProxyClearance(s)
 	s.proxyProbe = options.ProxyProbe
@@ -116,9 +118,14 @@ func NewServer(ctx context.Context, db *repository.Database, options Options) (*
 	}
 	s.Accounts = NewAccounts(db, s.Proxy, s.Settings, s.now)
 	if e := s.Accounts.Initialize(ctx); e != nil {
+		s.upstreamPool.Close()
 		return nil, e
 	}
-	s.Maintenance = NewMaintenance(ctx, s.Accounts, options.Upstream)
+	remote := options.Upstream
+	if remote == nil {
+		remote = NativeAccountUpstream{newClient: s.NewUpstream}
+	}
+	s.Maintenance = NewMaintenance(ctx, s.Accounts, remote)
 	s.Operations = NewOperations(ctx, s.Accounts)
 	s.register()
 	if options.DataDir != "" {
@@ -243,6 +250,7 @@ func (s *Server) Close(ctx context.Context) error {
 		executionErr = owner.Close(ctx)
 	}
 	callsFinished, callErr := s.waitCalls(ctx)
+	s.upstreamPool.Close()
 	if s.Assets != nil && executionErr == nil && editableErr == nil && retentionErr == nil && backupErr == nil && remoteErr == nil && callsFinished {
 		assetErr = s.Assets.Close()
 	}

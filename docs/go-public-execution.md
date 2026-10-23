@@ -50,6 +50,28 @@ Actual generation attempts still obey the existing retry settings. A caller
 without a deadline keeps immediate exhaustion errors rather than waiting forever;
 origin-bound recovery continues to fail closed without a replacement account.
 
+Maintenance merges concurrent image preflights for the same credentials and
+routing configuration and retains successful evidence for ten seconds. Every
+cache hit reads current account data; account mutations, image outcomes, token
+refresh, explicit sync and auth verification invalidate evidence. Account and
+proxy/session configuration signatures also detect external repository changes.
+Failures and remote-confirmed quota exhaustion are not cached. Manual sync
+continues to call upstream, and surviving waiters may retry an initiating
+caller's canceled preflight within their own deadlines.
+
+The Server-owned browser transport pool retains at most 128 authenticated
+configurations, isolating credentials, egress, browser identity, clearance, TLS
+policy and timeout. Unused entries expire after two minutes on pool access;
+sockets have a 90-second idle timeout, with at most 16 idle connections per
+transport and eight per host. Capacity overflow uses independently closed
+clients. Native account maintenance, images and text use the server factory;
+unauthenticated flows keep independent cookie jars. Each request still has its
+own protocol Client, operation gate, limits and timing callback, so same-account
+concurrency is preserved. Server shutdown retires the pool after a bounded drain; remaining active leases
+close their idle connections when returned.
+See [ADR 0012](adr/0012-bounded-go-upstream-reuse.md). These changes remove
+repeated setup work; production latency improvement has not been measured.
+
 Input references accept the existing JSON, form and multipart shapes. Remote
 images use public-address validation, pinned dialing, bounded redirects and
 bodies, without ambient proxy credentials. Signed uploads do not inherit the
