@@ -80,6 +80,14 @@ are the necessary database adapters, pinned by `go.mod`/`go.sum`. Request schema
 metadata/defaults live in `internal/controlplane/spec.json`, derived from the
 pinned Python baseline and owned by Go at runtime.
 
+Go's `image_account_concurrency` accepts integers from 1 to 20, defaulting to 1.
+The settings API publishes the range to Vue and validates writes; the account
+pool consumes the normalized setting without a separate concurrency ceiling.
+Saved changes apply to subsequent slot checks without restarting. Lowering the
+limit lets existing leases finish and delays new leases until capacity is free.
+Proxy-node capacity remains an independent limit. The Python runtime retains
+its existing 1–3 range; Vue displays whichever range its backend advertises.
+
 ```sh
 cd go-backend
 go build -o /tmp/chatgpt2api-control ./cmd/control-server

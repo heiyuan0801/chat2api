@@ -150,7 +150,8 @@ func (a *Accounts) slot(ctx context.Context, r PoolRequest, attempted map[string
 		if e != nil {
 			return nil, e
 		}
-		limit := max(1, min(3, integer(values["image_account_concurrency"], 1)))
+		// Settings.Values applies the same bounds advertised to the console.
+		limit := integer(values["image_account_concurrency"], 1)
 		ready := []Map{}
 		matched, limited := 0, 0
 		for _, m := range items {

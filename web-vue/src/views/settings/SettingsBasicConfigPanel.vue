@@ -37,7 +37,7 @@
 
         <FormField label="单账号图片并发">
           <template #label-extra>
-            <HelpTip text="限制每个账号同时处理的图片请求数量。默认 1，可设置为 1–3。" />
+            <HelpTip :text="`限制每个账号同时处理的图片请求数量。默认 ${imageAccountConcurrencyField.placeholder.value}，可设置为 ${imageAccountConcurrencyField.min.value}–${imageAccountConcurrencyField.max.value}。`" />
           </template>
           <SettingsNumberInput :field="imageAccountConcurrencyField" />
         </FormField>
