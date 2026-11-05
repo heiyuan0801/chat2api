@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var callFailureLabels = map[string]string{"upstream_error": "上游请求失败", "internal_error": "内部处理异常", "upstream_unavailable": "上游服务暂不可用", "upstream_connection_failed": "无法连接上游", "upstream_connection_timeout": "上游连接超时", "upstream_rate_limited": "上游服务限流", "image_poll_timeout": "等待图片结果超时", "image_stream_timeout": "上游图片流超时", "image_stream_interrupted": "上游图片流中断", "image_tool_error": "图片工具异常", "image_quota_exhausted": "图片额度已用尽", "file_upload_throttled": "参考图上传受限", "auth_invalid": "账号登录态失效", "content_policy_violation": "内容安全策略拒绝", "invalid_image_input": "图片输入无效", "upstream_text_reply": "上游仅返回文本", "no_image_generated": "未生成图片", "unsupported_model": "模型不支持生图", "image_download_failed": "图片下载失败", "task_interrupted": "图片任务被中断", "no_available_account": "暂无可用账号", "insufficient_quota": "图片额度不足"}
+var callFailureLabels = map[string]string{"request_validation_failed": "请求参数校验失败", "upstream_error": "上游请求失败", "internal_error": "内部处理异常", "upstream_unavailable": "上游服务暂不可用", "upstream_connection_failed": "无法连接上游", "upstream_connection_timeout": "上游连接超时", "upstream_rate_limited": "上游服务限流", "image_poll_timeout": "等待图片结果超时", "image_stream_timeout": "上游图片流超时", "image_stream_interrupted": "上游图片流中断", "image_tool_error": "图片工具异常", "image_quota_exhausted": "图片额度已用尽", "file_upload_throttled": "参考图上传受限", "auth_invalid": "账号登录态失效", "content_policy_violation": "内容安全策略拒绝", "invalid_image_input": "图片输入无效", "upstream_text_reply": "上游仅返回文本", "no_image_generated": "未生成图片", "unsupported_model": "模型不支持生图", "image_download_failed": "图片下载失败", "task_interrupted": "图片任务被中断", "no_available_account": "暂无可用账号", "insufficient_quota": "图片额度不足"}
 var callBusinessLabels = map[string]string{"account": "账号操作", "image_generation": "文生图", "image_edit": "图生图", "image_chat": "对话生图", "chat": "对话", "responses": "响应", "messages": "消息", "search": "搜索", "file": "文件"}
 
 func callDetail(item Map) Map {
@@ -149,6 +149,9 @@ func normalizeCallAccount(s string) string {
 func callOutcome(item Map) string {
 	status := strings.ToLower(callClean(callValue(item, "status")))
 	code := strings.ToLower(callClean(orValue(callValue(item, "error_code"), callValue(item, "failure_code"))))
+	if code == "request_validation_failed" {
+		return "failed"
+	}
 	httpCode := callInt(callValue(item, "status_code"))
 	req, success, failed, result := callImages(item)
 	if callBusiness(item) == "account" {

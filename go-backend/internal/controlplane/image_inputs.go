@@ -227,10 +227,11 @@ func parseEditFields(fields Map) (Map, error) {
 	if err := validateImageModelOptions(fields); err != nil {
 		return nil, err
 	}
-	prompt := text(fields["prompt"])
-	if prompt == "" {
+	prompt, validPrompt := fields["prompt"].(string)
+	if !validPrompt || strings.TrimSpace(prompt) == "" {
 		return nil, problem(400, "prompt is required")
 	}
+	prompt = strings.TrimSpace(prompt)
 	n := 1
 	if truth(fields["n"]) {
 		if raw, ok := fields["n"].(string); ok {
@@ -395,18 +396,18 @@ func (s *Server) parseImageEdit(ctx context.Context, w http.ResponseWriter, r *h
 	}
 	payload, e := parseEditFields(fields)
 	if e != nil {
-		return nil, nil, nil, e
+		return fields, nil, nil, e
 	}
 	images, e := s.readImageReferences(ctx, refs)
 	if e != nil {
-		return nil, nil, nil, e
+		return fields, nil, nil, e
 	}
 	maskInputs, e := s.readImageReferences(ctx, masks)
 	if e != nil {
-		return nil, nil, nil, e
+		return fields, nil, nil, e
 	}
 	if len(images) == 0 {
-		return nil, nil, nil, problem(400, "image file or image_url is required")
+		return fields, nil, nil, problem(400, "image file or image_url is required")
 	}
 	return payload, images, maskInputs, nil
 }

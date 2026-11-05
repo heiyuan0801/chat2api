@@ -8,6 +8,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -32,6 +33,13 @@ var publicSpec = func() struct {
 }()
 
 func validatePublic(model string, raw any) (Map, error) {
+	if model == "ImageGenerationRequest" || model == "ImageGenerationTaskRequest" {
+		if prompt, ok := object(raw)["prompt"].(string); ok && strings.TrimSpace(prompt) == "" {
+			body := copyMap(object(raw))
+			body["prompt"] = ""
+			raw = body
+		}
+	}
 	if model == "ImageGenerationRequest" || model == "ImageGenerationTaskRequest" || model == "ChatCompletionRequest" || model == "ResponseCreateRequest" {
 		if err := validateImageModelOptions(object(raw)); err != nil {
 			return nil, err
@@ -83,7 +91,11 @@ func decodePublic(w http.ResponseWriter, r *http.Request, model string) (Map, er
 	if d.Decode(&trailing) != io.EOF {
 		return nil, &ValidationError{[]Map{validationIssue("json_invalid", "JSON decode error", []any{"body", 0}, nil, nil)}}
 	}
-	return validatePublic(model, raw)
+	body, err := validatePublic(model, raw)
+	if err != nil {
+		return object(raw), err
+	}
+	return body, nil
 }
 
 type PublicStream struct {
@@ -129,6 +141,7 @@ func (s *Server) publicRoute(method, path, access, model string, fn endpoint) {
 		}
 		body, e := decodePublic(w, r, model)
 		if e != nil {
+			s.recordRejectedCall(ctx, w, r, body, identity, e)
 			writePublicError(w, r, e)
 			return
 		}

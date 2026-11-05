@@ -80,6 +80,7 @@ func (s *Server) registerPublicImages() {
 		}
 		payload, images, masks, err := s.parseImageEdit(ctx, w, r)
 		if err != nil {
+			s.recordRejectedCall(ctx, w, r, payload, who, err)
 			writePublicError(w, r, err)
 			return
 		}

@@ -607,7 +607,7 @@ func (c *Client) pollImage(ctx context.Context, state *conversationState) error 
 }
 
 func (c *Client) resolveAssets(ctx context.Context, state *conversationState) ([]ImageAsset, error) {
-	if state.svgRequested {
+	if state.svgRequested || len(state.svgArtifacts) > 0 {
 		return c.resolveSVG(ctx, state)
 	}
 	if len(state.Pointers) > 16 {

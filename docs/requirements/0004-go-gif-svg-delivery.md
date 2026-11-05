@@ -17,8 +17,10 @@ SVG attachment. The public API did not collect that attachment.
 ImageAssets owns actual format validation, suffix, MIME, save/read, gallery,
 WebDAV and download behavior. Native image execution preserves GIF animation
 and SVG vectors across optional upscaling. The upstream adapter waits for final
-SVG attachments when the prompt explicitly mentions SVG, using the current
-turn and the original account. Existing editable-file download resolution is
+SVG attachments when the prompt explicitly requests SVG output, using the current
+turn and the original account. Format intent must distinguish an explicit file
+output instruction from SVG mentioned in poster copy or capability descriptions;
+negative instructions must not force SVG delivery. Existing editable-file download resolution is
 reused without introducing a second persistent file owner. Task projections
 carry optional MIME; Vue consumes it when constructing data URLs.
 Browser image downloads use the response MIME to correct legacy/default image
@@ -42,6 +44,11 @@ update, commit or push is included. Historical PNG-named files remain readable.
   attachment, and publishes the SVG through existing image routes and tasks.
 - No SVG result is reported when only PNG, stale branch, source code or pending
   attachment exists; timeout remains resumable on the same upstream account.
+- Ordinary PNG/GIF output survives quoted/descriptive SVG mentions and negative
+  SVG instructions. Real committed SVG attachments remain discoverable.
+- Missing, empty, whitespace-only and non-string prompts cannot call upstream;
+  authenticated input failures produce one credential-free Call Record with
+  field diagnostics and prompt length, preserving public error status/envelopes.
 - Same-origin downloads retain authentication; third-party URLs do not receive it.
 - Direct and admin downloads, base64/SSE/chat outputs, WebDAV and gallery previews
   preserve content type; SVG responses carry restrictive browser headers.

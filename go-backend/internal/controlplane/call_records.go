@@ -3,11 +3,13 @@ package controlplane
 import (
 	"context"
 	"errors"
+	"net/http"
 	"regexp"
 	"slices"
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf8"
 
 	"github.com/yukkcat/chatgpt2api/go-backend/internal/repository"
 )
@@ -44,6 +46,49 @@ func safeCallText(value any, limit int) string {
 	}
 	return s
 }
+
+// Rejected input belongs to the same Call Record owner, but must never pass its
+// raw body through requestContentText: it can contain credentials or image data.
+func (s *Server) recordRejectedCall(ctx context.Context, w http.ResponseWriter, r *http.Request, body, identity Map, err error) {
+	if r.Method != http.MethodPost || identity == nil {
+		return
+	}
+	status, response := publicErrorPayload(err, false)
+	if status < 400 || status >= 500 {
+		return
+	}
+	call := s.beginPublicCall(ctx, r.URL.Path, Map{}, identity)
+	if call == nil {
+		return
+	}
+	w.Header().Set("X-Request-ID", call.callID)
+	_, present := body["prompt"]
+	metadata := Map{"prompt_present": present, "content_type": strings.Split(r.Header.Get("Content-Type"), ";")[0]}
+	if prompt, ok := body["prompt"].(string); ok {
+		metadata["prompt_chars"] = utf8.RuneCountInString(prompt)
+		metadata["prompt_blank"] = strings.TrimSpace(prompt) == ""
+	}
+	call.detail["request_meta"] = metadata
+	call.detail["error_code"] = "request_validation_failed"
+	call.detail["status_code"] = status
+	var validation *ValidationError
+	if errors.As(err, &validation) {
+		issues := []Map{}
+		for _, issue := range validation.Details {
+			if len(issues) == 16 {
+				break
+			}
+			location := []string{}
+			for _, part := range list(issue["loc"]) {
+				location = append(location, safeCallText(part, 80))
+			}
+			issues = append(issues, Map{"field": strings.Join(location, "."), "type": safeCallText(issue["type"], 80), "message": safeCallText(issue["msg"], 256)})
+		}
+		call.detail["validation_errors"] = issues
+	}
+	_ = call.Finish(nil, problem(status, text(object(response["error"])["message"])))
+}
+
 func (s *Server) beginPublicCall(ctx context.Context, endpoint string, payload, identity Map) *CallRecorder {
 	model := safeCallText(imageTaskText(payload["model"], "auto"), 255)
 	imageRequest := strings.HasPrefix(endpoint, "/v1/images") || (endpoint == "/v1/chat/completions" && isPublicImageChat(payload)) || (endpoint == "/v1/responses" && isPublicImageResponse(payload))

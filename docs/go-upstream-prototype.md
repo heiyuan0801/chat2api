@@ -181,7 +181,8 @@ Image Asset service or a general-purpose downloader in the Go library.
 ## SVG attachment delivery
 
 The native generation and configured-polling interfaces recognize an explicit
-SVG request in the Web prompt. They wait for a terminal current turn, resolve
+SVG file-output instruction in the Web prompt, excluding quoted artwork copy,
+descriptive mentions and explicit negation. They wait for a terminal current turn, resolve
 its SVG sandbox/file attachment through the existing editable-file download
 resolver and publish only that attachment, not an earlier raster preview. The
 control-plane ImageAssets owner validates and stores the bytes; see

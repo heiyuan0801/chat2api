@@ -106,9 +106,13 @@ chat data URLs and Vue task previews use the actual MIME. Gallery previews use
 the original GIF/SVG, and direct, admin, ZIP and WebDAV delivery retain bytes.
 Browser downloads correct legacy/default image suffixes from the response MIME.
 
-For ChatGPT Web requests whose prompt explicitly mentions `SVG`, the adapter
+For ChatGPT Web requests with an explicit SVG file-output instruction, the adapter
 waits for a completed assistant turn and extracts its SVG attachment instead of
-returning an earlier PNG preview. Current-turn sandbox links and typed file
+returning an earlier PNG preview. Conservative Chinese/English output phrases
+select this wait; quoted artwork copy, capability descriptions, SVG-themed
+posters and explicit negative SVG instructions do not select it. A committed
+current-turn SVG attachment can also be discovered from actual output metadata.
+Current-turn sandbox links and typed file
 metadata use the existing authenticated download resolver; private credentials
 never accompany third-party URLs. Missing attachments and download-resolution
 failures do not trigger another generation, and a poll timeout
@@ -124,6 +128,17 @@ are accepted. Scripts, event handlers, embedded raster images, foreign content,
 external references, DTDs and CSS style elements/attributes are rejected rather
 than silently altered. SVG reads are revalidated and return `nosniff` and a
 sandboxed Content Security Policy. No files or account data are migrated.
+
+Authenticated public and image-task input rejections also produce one failed
+Call Record, with `request_validation_failed` and an `X-Request-ID` response
+header matching its `detail.call_id`. These records retain the endpoint,
+validation field/type/message, prompt presence/character count and blank flag;
+they never retain the rejected body, image bytes or credential values. HTTP 400
+validation failures remain failed calls rather than upstream text-review results.
+Generation and edit prompts must be strings with non-whitespace content. Existing
+422 generation and 400 edit envelopes are retained; rejected requests never
+select an upstream account or submit generation. Studio already prevents blank
+composer and image-edit prompts from being submitted.
 
 ## Durable ownership
 

@@ -27,6 +27,9 @@ func (s *Server) imageTaskRoute(method, path, model string, fn func(context.Cont
 		}()
 		body, err := decodePublic(w, r, model)
 		if err != nil {
+			if who, authErr := s.Auth.Identity(ctx, r.Header.Get("Authorization")); authErr == nil {
+				s.recordRejectedCall(ctx, w, r, body, who, err)
+			}
 			writeError(w, err)
 			return
 		}
@@ -68,6 +71,7 @@ func (s *Server) registerImageTasks() {
 		defer reservation.Rollback()
 		payload, images, masks, err := s.parseImageEdit(ctx, w, r)
 		if err != nil {
+			s.recordRejectedCall(ctx, w, r, payload, who, err)
 			return nil, err
 		}
 		if text(payload["client_task_id"]) == "" {
