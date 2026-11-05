@@ -118,8 +118,9 @@ never accompany third-party URLs. Missing attachments and download-resolution
 failures do not trigger another generation, and a poll timeout
 keeps the original conversation/account for read-only recovery. This is a
 prompt-driven attachment flow, possibly produced by the upstream code tool;
-it does not prove native Image 2.6 vector output. `output_format=svg` remains
-unsupported; structured GIF hints are described below.
+it does not prove native Image 2.6 vector output. `output_format=svg` is accepted
+for request compatibility but adds no SVG instruction or conversion; structured
+GIF hints are described below.
 
 SVG is an output format, not a supported edit-reference input. Files are limited
 to 2 MiB, 50,000 XML elements and 64 levels, with bounded positive dimensions.
@@ -192,12 +193,14 @@ remain stage 4.
 
 | Field | Accepted value | Omitted or null |
 | --- | --- | --- |
-| `output_format` | `gif` | No structured format hint |
+| `output_format` | Any string; only exact lowercase `gif` enables GIF hints | No structured format hint |
 | `frame_count` | Integer 1–120; requires `output_format=gif` | No frame-count hint |
 | `frame_duration_ms` | Integer 10–10000; requires `output_format=gif` | No frame-duration hint |
 
 JSON and multipart/form edits use the same validation and accept integer strings
-for form controls. Invalid types, ranges, unsupported formats and frame controls
+for form controls. Non-GIF strings (including `png`, `jpeg`, `webp`, `svg`, empty
+strings and unknown format names) retain the legacy image flow without adding
+format instructions or conversion. Invalid types, ranges and frame controls
 without GIF return HTTP 400 before account execution. Chat Completions and
 Responses do not accept these controls. These are bounded prompt hints, not
 native rendering settings or transcoding: final format, frames and timings
@@ -251,8 +254,9 @@ For these two names, explicit non-null `complexity`, `markup`, `background`,
 Only `output_format=gif` is supported as a prompt hint on image endpoints. No
 SVG/GIF result or exact complexity control is guaranteed by those names; the
 prompt-driven attachment behavior above is a separate path. JSON, multipart and
-asynchronous task entry points apply the same rule before dropping unknown
-fields. `quality` accepts `auto`, `low`, `medium`, `high`, `xhigh` and `max`;
+asynchronous task entry points accept other output-format strings for legacy
+compatibility without treating them as rendering controls. `quality` accepts
+`auto`, `low`, `medium`, `high`, `xhigh` and `max`;
 it remains a Web prompt hint rather than an enforced rendering control.
 Existing URL/base64, streaming, edit references and task delivery are reused.
 Actual upstream 2.6 identity and precise variant selection remain unverified.

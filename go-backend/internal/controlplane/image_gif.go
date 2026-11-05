@@ -10,6 +10,8 @@ var imageGIFFields = []string{"output_format", "frame_count", "frame_duration_ms
 
 // Reuse the public contract for JSON, multipart edits and queued execution.
 // Null and omitted values intentionally do not supply animation defaults.
+// Other output_format strings preserve legacy image behavior; only "gif"
+// enables animation hints and model-scope checks. This does not transcode files.
 func imageGIFOptions(payload Map) (Map, error) {
 	options := Map{}
 	properties := object(publicSpec.Models["ImageGenerationRequest"]["properties"])

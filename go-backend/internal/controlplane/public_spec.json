@@ -265,10 +265,7 @@
         "output_format": {
           "anyOf": [
             {
-              "type": "string",
-              "enum": [
-                "gif"
-              ]
+              "type": "string"
             },
             {
               "type": "null"
@@ -366,10 +363,7 @@
         "output_format": {
           "anyOf": [
             {
-              "type": "string",
-              "enum": [
-                "gif"
-              ]
+              "type": "string"
             },
             {
               "type": "null"

@@ -17,8 +17,10 @@ the existing default Base64 response and reusable image delivery lifecycle.
 Images generation, edits (JSON/form/multipart) and asynchronous Image Tasks accept
 optional `output_format=gif`, `frame_count` (integer 1–120) and
 `frame_duration_ms` (integer 10–10000). Frame controls require GIF output; absent
-or null controls add no default hints. Unsupported formats and invalid values
-fail before upstream execution. Chat/Responses controls remain unsupported.
+or null controls add no default hints. Non-GIF output-format strings are accepted
+for legacy compatibility and add no format instructions or conversion. Invalid
+types, frame ranges and frame controls without GIF fail before upstream execution.
+Chat/Responses controls remain unsupported.
 
 `image_gif_model_scope` is a persisted Settings enum: `image26` (default, the two
 existing 2.6 compatibility names) or `all` (all supported image models). It
@@ -88,3 +90,20 @@ The initial local verification did not include publication or deployment.
 The user subsequently authorized commit/push and sequential updates of the three
 Go services, preserving existing data and backing up accounts only. User-visible
 acceptance and deployment verification remain separate evidence gates.
+
+## Output-format compatibility correction (2026-11-05)
+
+The user requested removing the GIF-only output-format enum after a legacy
+multipart edit was rejected at admission. Image endpoints now accept any string
+without adding format conversion; exact lowercase `gif` retains its existing
+scope and frame checks. Non-string formats and invalid frame controls remain
+invalid. No storage, response-format or account-scheduling behavior changes.
+
+Local verification passed 128 compatibility cases across 2.5/2.6, generation,
+JSON/form/multipart edits and asynchronous tasks, including original prompt,
+reference bytes and default Base64 delivery. The race suite and its environment
+repair rerun together passed 254 top-level tests (1,407 including subtests), with
+2 optional Redis tests skipped. The PostgreSQL snapshot test needed the existing
+`pg_dump` added to the test process PATH; its targeted race rerun passed. Go vet
+and native build passed. The user then authorized commit/push, GitHub verification
+and sequential server updates after CI passes; deployment is a separate gate.
