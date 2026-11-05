@@ -41,7 +41,7 @@ func validatePublic(model string, raw any) (Map, error) {
 		}
 	}
 	if model == "ImageGenerationRequest" || model == "ImageGenerationTaskRequest" || model == "ChatCompletionRequest" || model == "ResponseCreateRequest" {
-		if err := validateImageModelOptions(object(raw)); err != nil {
+		if err := validateImageModelOptions(object(raw), model == "ImageGenerationRequest" || model == "ImageGenerationTaskRequest"); err != nil {
 			return nil, err
 		}
 	}
@@ -144,6 +144,13 @@ func (s *Server) publicRoute(method, path, access, model string, fn endpoint) {
 			s.recordRejectedCall(ctx, w, r, body, identity, e)
 			writePublicError(w, r, e)
 			return
+		}
+		if model == "ImageGenerationRequest" {
+			if e = s.checkImageGIFScope(ctx, body); e != nil {
+				s.recordRejectedCall(ctx, w, r, body, identity, e)
+				writePublicError(w, r, e)
+				return
+			}
 		}
 		if method == "POST" {
 			call = s.beginPublicCall(ctx, path, body, identity)

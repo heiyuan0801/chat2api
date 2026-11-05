@@ -261,6 +261,46 @@
           ],
           "default": null,
           "title": "Stream"
+        },
+        "output_format": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "gif"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Output Format"
+        },
+        "frame_count": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Frame Count"
+        },
+        "frame_duration_ms": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 10,
+              "maximum": 10000
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Frame Duration Ms"
         }
       },
       "required": [
@@ -276,7 +316,10 @@
         "quality",
         "response_format",
         "history_disabled",
-        "stream"
+        "stream",
+        "output_format",
+        "frame_count",
+        "frame_duration_ms"
       ]
     },
     "ImageGenerationTaskRequest": {
@@ -319,6 +362,46 @@
           ],
           "default": null,
           "title": "Size"
+        },
+        "output_format": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "gif"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Output Format"
+        },
+        "frame_count": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Frame Count"
+        },
+        "frame_duration_ms": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 10,
+              "maximum": 10000
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Frame Duration Ms"
         }
       },
       "required": [
@@ -333,7 +416,10 @@
         "model",
         "n",
         "size",
-        "quality"
+        "quality",
+        "output_format",
+        "frame_count",
+        "frame_duration_ms"
       ]
     },
     "ResponseCreateRequest": {

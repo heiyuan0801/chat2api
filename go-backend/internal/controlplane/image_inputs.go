@@ -224,7 +224,7 @@ func (s *Server) readImageReferences(ctx context.Context, value any) ([]upstream
 	return inputs, nil
 }
 func parseEditFields(fields Map) (Map, error) {
-	if err := validateImageModelOptions(fields); err != nil {
+	if err := validateImageModelOptions(fields, true); err != nil {
 		return nil, err
 	}
 	prompt, validPrompt := fields["prompt"].(string)
@@ -272,6 +272,10 @@ func parseEditFields(fields Map) (Map, error) {
 	}
 	if v, ok := fields["client_task_id"]; ok {
 		payload["client_task_id"] = text(v)
+	}
+	gifOptions, _ := imageGIFOptions(fields) // validated before parsing edit fields
+	for key, value := range gifOptions {
+		payload[key] = value
 	}
 	return payload, nil
 }
@@ -396,6 +400,9 @@ func (s *Server) parseImageEdit(ctx context.Context, w http.ResponseWriter, r *h
 	}
 	payload, e := parseEditFields(fields)
 	if e != nil {
+		return fields, nil, nil, e
+	}
+	if e = s.checkImageGIFScope(ctx, payload); e != nil {
 		return fields, nil, nil, e
 	}
 	images, e := s.readImageReferences(ctx, refs)

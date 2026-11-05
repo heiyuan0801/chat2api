@@ -38,6 +38,13 @@ func (s *Server) imageTaskRoute(method, path, model string, fn func(context.Cont
 			writeError(w, err)
 			return
 		}
+		if model == "ImageGenerationTaskRequest" {
+			if err = s.checkImageGIFScope(ctx, body); err != nil {
+				s.recordRejectedCall(ctx, w, r, body, who, err)
+				writeError(w, err)
+				return
+			}
+		}
 		value, err := fn(ctx, w, r, body, who)
 		if err != nil {
 			writeError(w, imageTaskHTTPError(err))

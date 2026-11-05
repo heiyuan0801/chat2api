@@ -65,6 +65,20 @@
 
     <FormSection title="图片生成">
       <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <FormField v-if="fields.image_gif_model_scope" label="GIF 模型范围">
+          <template #label-extra>
+            <HelpTip text="控制哪些模型可使用 output_format=gif 参数。实际格式、帧数和时长由上游决定，部分模型可能仍返回静态图片。" />
+          </template>
+          <GroupedSelectMenu
+            v-model="settings.image_gif_model_scope"
+            :options="gifModelScopeOptions"
+            :disabled="fieldReadOnly('image_gif_model_scope')"
+            selected-indicator="none"
+            aria-label="GIF 模型范围"
+            block
+          />
+        </FormField>
+
         <FormField label="图片流等待上限">
           <template #label-extra>
             <HelpTip text="单位秒，限制 ChatGPT 生图 SSE 流的等待时间。" />
@@ -98,10 +112,11 @@
 </template>
 
 <script setup lang="ts">
-import { FormField, FormSection, HelpTip, Input } from 'nanocat-ui'
+import { computed } from 'vue'
+import { FormField, FormSection, GroupedSelectMenu, HelpTip, Input } from 'nanocat-ui'
 import type { Settings } from '@/types/api'
 import SettingsNumberInput from '@/views/settings/SettingsNumberInput.vue'
-import { settingsFieldReadOnly, type SettingsFields } from '@/views/settings/settingsView'
+import { settingsFieldOptions, settingsFieldReadOnly, type SettingsFields } from '@/views/settings/settingsView'
 import type { NumberSettingField } from '@/views/settings/useNumberSettingField'
 
 const props = defineProps<{
@@ -118,6 +133,8 @@ const props = defineProps<{
   imageAccountConcurrencyField: NumberSettingField
   accountProcessingConcurrencyField: NumberSettingField
 }>()
+
+const gifModelScopeOptions = computed(() => settingsFieldOptions(props.fields, 'image_gif_model_scope', props.settings.image_gif_model_scope))
 
 const fieldReadOnly = (path: string) => settingsFieldReadOnly(props.fields, path)
 </script>

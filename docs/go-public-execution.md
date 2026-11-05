@@ -118,8 +118,8 @@ never accompany third-party URLs. Missing attachments and download-resolution
 failures do not trigger another generation, and a poll timeout
 keeps the original conversation/account for read-only recovery. This is a
 prompt-driven attachment flow, possibly produced by the upstream code tool;
-it does not prove native Image 2.6 vector output. Official `output_format`,
-`frame_count` and related unsupported controls are still rejected for 2.6 names.
+it does not prove native Image 2.6 vector output. `output_format=svg` remains
+unsupported; structured GIF hints are described below.
 
 SVG is an output format, not a supported edit-reference input. Files are limited
 to 2 MiB, 50,000 XML elements and 64 levels, with bounded positive dimensions.
@@ -185,6 +185,52 @@ for final record writes before database closure; write/shutdown failures are
 reported. Logs/metrics queries, retained aggregate handling and live monitoring
 remain stage 4.
 
+## Structured GIF request controls
+
+`POST /v1/images/generations`, `/v1/images/edits` and the corresponding
+`/api/image-tasks/generations` and `/api/image-tasks/edits` accept:
+
+| Field | Accepted value | Omitted or null |
+| --- | --- | --- |
+| `output_format` | `gif` | No structured format hint |
+| `frame_count` | Integer 1–120; requires `output_format=gif` | No frame-count hint |
+| `frame_duration_ms` | Integer 10–10000; requires `output_format=gif` | No frame-duration hint |
+
+JSON and multipart/form edits use the same validation and accept integer strings
+for form controls. Invalid types, ranges, unsupported formats and frame controls
+without GIF return HTTP 400 before account execution. Chat Completions and
+Responses do not accept these controls. These are bounded prompt hints, not
+native rendering settings or transcoding: final format, frames and timings
+remain upstream-dependent, and static previews may accompany the GIF.
+
+Settings `image_gif_model_scope` defaults to `image26`, allowing the two existing
+Image 2.6 compatibility names. `all` allows every otherwise supported image
+model to request the hints; unknown models remain invalid. The setting is
+persisted and hot-applied, and is checked again before queued execution. It
+does not restrict prompt-only GIF generation. Codex's image tool currently
+requests PNG, so allowing its name does not guarantee GIF capability.
+The console renders the server's scope options in Settings → Basic → Image
+generation; older backends without the metadata do not show this control.
+
+Native image execution appends instructions only to its upstream prompt.
+Call Records and `revised_prompt` retain the original caller text. Existing
+`response_format` handling is unchanged: the Images API defaults to `b64_json`,
+explicit `url` returns the stored file URL, and SSE delivers completed files
+rather than incremental animation frames. Image Task projection and read-only
+resume keep their current lifecycle and delivery format.
+
+Example (default Base64 response):
+
+```json
+{
+  "model": "gpt-image-2.6-flare",
+  "prompt": "A small orange ball bouncing on a white background",
+  "output_format": "gif",
+  "frame_count": 9,
+  "frame_duration_ms": 200
+}
+```
+
 ## Image 2.6 compatibility boundary
 
 The default Model Catalog and public image validation accept
@@ -201,8 +247,8 @@ and [generation guide](https://developers.openai.com/api/docs/guides/image-gener
 describe the official Images API, not this gateway's Web conversation protocol.
 
 For these two names, explicit non-null `complexity`, `markup`, `background`,
-`output_format`, `output_compression`, `frame_count`, `frame_duration_ms` and
-`input_fidelity` return HTTP 400 before account execution. In particular, no
+`output_compression` and `input_fidelity` return HTTP 400 before account execution.
+Only `output_format=gif` is supported as a prompt hint on image endpoints. No
 SVG/GIF result or exact complexity control is guaranteed by those names; the
 prompt-driven attachment behavior above is a separate path. JSON, multipart and
 asynchronous task entry points apply the same rule before dropping unknown

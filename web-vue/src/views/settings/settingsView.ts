@@ -43,6 +43,10 @@ export const settingsTabs: SettingsSelectOption[] = [
 ]
 
 const settingsOptionLabels: Record<string, Record<string, string>> = {
+  image_gif_model_scope: {
+    image26: '仅 2.6 系列',
+    all: '全部图片模型',
+  },
   image_upscale_engine: {
     sharp_lanczos3: 'Sharp / Lanczos3',
     pillow_lanczos: 'Pillow / Lanczos',

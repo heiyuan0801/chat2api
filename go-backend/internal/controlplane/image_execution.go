@@ -311,11 +311,22 @@ func imagePoolRequest(model string) (PoolRequest, string, error) {
 }
 
 // Validate before normalization can discard unsupported Image API controls.
-func validateImageModelOptions(payload Map) error {
+func validateImageModelOptions(payload Map, imageControls bool) error {
+	if imageControls {
+		if _, err := imageGIFOptions(payload); err != nil {
+			return err
+		}
+	} else {
+		for _, key := range imageGIFFields {
+			if payload[key] != nil {
+				return problem(400, key+" is only supported on image generation and edit endpoints")
+			}
+		}
+	}
 	if !isImage26Model(text(payload["model"])) {
 		return nil
 	}
-	for _, key := range []string{"complexity", "markup", "output_format", "output_compression", "background", "frame_count", "frame_duration_ms", "input_fidelity"} {
+	for _, key := range []string{"complexity", "markup", "output_compression", "background", "input_fidelity"} {
 		if value, ok := payload[key]; ok && value != nil {
 			return problem(400, key+" is not supported by the ChatGPT Web compatibility route; Image 2.6 names do not select an exact upstream model")
 		}
@@ -354,7 +365,7 @@ func (e *NativeImageExecutor) Execute(parent context.Context, payload Map, progr
 		return nil, context.Canceled
 	}
 	defer e.active.Done()
-	if err := validateImageModelOptions(payload); err != nil {
+	if err := validateImageModelOptions(payload, true); err != nil {
 		return nil, err
 	}
 	s := e.server
@@ -365,6 +376,9 @@ func (e *NativeImageExecutor) Execute(parent context.Context, payload Map, progr
 	model := orValue(text(payload["model"]), "gpt-image-2").(string)
 	pool, baseModel, err := imagePoolRequest(model)
 	if err != nil {
+		return nil, err
+	}
+	if err := validateImageGIFScope(payload, settings); err != nil {
 		return nil, err
 	}
 	n := integer(payload["n"], 1)
@@ -389,6 +403,7 @@ func (e *NativeImageExecutor) Execute(parent context.Context, payload Map, progr
 	if request.Prompt == "" {
 		return nil, imageProblem("invalid_image_input", 400, "prompt is required", nil)
 	}
+	request.Prompt = imageGIFPrompt(request.Prompt, payload)
 	type completed struct {
 		result Map
 		err    error

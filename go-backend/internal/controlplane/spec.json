@@ -97,7 +97,8 @@
         "enabled": false,
         "url": "https://canvas.best"
       }
-    }
+    },
+    "image_gif_model_scope": "image26"
   },
   "fields": {
     "account_processing_concurrency": {
@@ -807,6 +808,19 @@
       "restart_required": false,
       "sensitive": false,
       "unit": null
+    },
+    "image_gif_model_scope": {
+      "default": "image26",
+      "max": null,
+      "min": null,
+      "options": [
+        "image26",
+        "all"
+      ],
+      "read_only": false,
+      "restart_required": false,
+      "sensitive": false,
+      "unit": null
     }
   },
   "managed": [
@@ -838,7 +852,8 @@
     "image_storage",
     "genbox_push",
     "backup",
-    "third_party_apps"
+    "third_party_apps",
+    "image_gif_model_scope"
   ],
   "models": {
     "AccountBatchUpdateRequest": {
@@ -2578,6 +2593,15 @@
         },
         "third_party_apps": {
           "$ref": "#/$defs/ThirdPartyAppsSettings"
+        },
+        "image_gif_model_scope": {
+          "default": "image26",
+          "enum": [
+            "image26",
+            "all"
+          ],
+          "title": "Image GIF Model Scope",
+          "type": "string"
         }
       },
       "required": [
@@ -2615,7 +2639,8 @@
         "genbox_push",
         "backup",
         "third_party_apps",
-        "revision"
+        "revision",
+        "image_gif_model_scope"
       ]
     },
     "UserKeyCreateRequest": {

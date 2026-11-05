@@ -33,6 +33,7 @@ requirements may move to `archive/` after links and this index are updated.
 | --- | --- | --- |
 | [0001: Go backend migration](0001-go-backend-migration.md) | implementing | Retain Vue and API/data compatibility; stages 1-4 implemented locally with explicit validation limits; local Go packaging/update rehearsal included, production cutover pending; overall migration and user acceptance pending |
 | [0002: Go upstream reuse](0002-go-upstream-reuse.md) | pending-verification | Local implementation and automated verification passed; live performance and user acceptance unverified, deployment excluded |
+| [0005: Go GIF request controls](0005-go-gif-request-controls.md) | pending-verification | Local contract, browser and live GIF checks passed; user acceptance pending |
 | [0004: Go GIF and SVG delivery](0004-go-gif-svg-delivery.md) | pending-verification | Local tests and live GIF/SVG downloads verified; user acceptance and publication pending |
 | [0003: Go Image 2.6 compatibility](0003-go-image-26-compatibility.md) | pending-verification | Model-name compatibility and honest Web-route limits; exact native selection unverified |
 

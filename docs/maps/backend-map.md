@@ -84,7 +84,7 @@ including FlareSolverr clearance and complete management registration.
 | --- | --- |
 | `public_*.go` | Public protocol validation, normalization, errors, token usage and bounded streaming/cache |
 | `text_cache.go` | Optional Redis successful-text event cache, bounded atomic expiry/capacity and fail-open reads/writes; local in-flight deduplication remains in `public_text.go` |
-| `image_execution.go`, `image_inputs.go`, `image_transform.go` | Shared image execution, masks, account attempts, deadlines and input limits |
+| `image_execution.go`, `image_inputs.go`, `image_transform.go`, `image_gif.go` | Shared image execution, GIF parameter admission/upstream-only hints, masks, account attempts, deadlines and input limits |
 | `image_tasks*.go`, `internal/filepersist` | Durable task lifecycle, projections, queue, spooling and compatible locks/JSON |
 | `image_assets.go` | Registered asset save/read and compatible local/WebDAV catalog commits |
 | `call_records.go`, `internal/repository/call_records.go` | Independent final Call Record append, with existing SQL payload/derived columns |

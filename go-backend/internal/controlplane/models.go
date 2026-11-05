@@ -93,7 +93,7 @@ func (s *Server) modelCatalog(ctx context.Context) (Map, error) {
 	notices := Map{}
 	for _, name := range images {
 		if isImage26Model(name) {
-			notices[name] = "当前仅兼容此模型名称，实际模型由 ChatGPT 自动选择，无法保证使用 Image 2.6 或区分 Flare / Sunburst。暂不支持 complexity、SVG/GIF 等参数。"
+			notices[name] = "当前仅兼容此模型名称，实际模型由 ChatGPT 自动选择，无法保证使用 Image 2.6 或区分 Flare / Sunburst。GIF 参数通过提示词表达，实际格式和帧数由上游决定；暂不支持 complexity、output_format=svg 等参数。"
 		}
 	}
 	if len(notices) > 0 {
