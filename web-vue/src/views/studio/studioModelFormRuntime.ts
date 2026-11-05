@@ -38,6 +38,8 @@ export function useStudioModelFormRuntime() {
     )
   })
 
+  const imageModelNotice = computed(() => catalog.value?.capabilities.image_model_notices?.[imageForm.model] || '')
+
   watch(chatModel, (model) => setStringPreference(preferenceKeys.studioChatModel, model || 'auto'))
   watch(chatReasoningEffort, (effort) => setStringPreference(preferenceKeys.studioChatReasoningEffort, effort || ''))
   watch(() => imageForm.model, (model) => {
@@ -63,6 +65,7 @@ export function useStudioModelFormRuntime() {
     imageForm,
     imageModelOptions,
     imageHighResolutionEnabled,
+    imageModelNotice,
     loadModelCatalog,
   }
 }

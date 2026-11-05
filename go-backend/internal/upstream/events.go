@@ -25,6 +25,8 @@ type conversationState struct {
 	imageMode         bool
 	imageArguments    bool
 	contentType       string
+	svgRequested      bool
+	svgArtifacts      []editableArtifact
 }
 
 var pointerPattern = regexp.MustCompile(`^(file-service|sediment)://([A-Za-z0-9_-]+)$`)

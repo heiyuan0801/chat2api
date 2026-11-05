@@ -58,7 +58,7 @@ func (s *Server) registerGallery() {
 		}
 		headers := galleryCORS()
 		headers["Content-Disposition"] = `attachment; filename="` + path.Base(rel) + `"`
-		return &Download{Bytes: data, ContentType: mime, Headers: headers}, nil
+		return &Download{Bytes: data, ContentType: mime, Headers: imageResponseHeaders(mime, headers)}, nil
 	})
 	s.route("POST", "/api/images/download", "admin", "ImageDownloadRequest", func(ctx context.Context, _ *http.Request, body Map, _ Map) (any, error) {
 		return s.Assets.zip(ctx, stringsOf(body["paths"]))

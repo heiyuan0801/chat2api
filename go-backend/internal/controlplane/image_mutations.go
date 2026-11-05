@@ -484,7 +484,7 @@ func (a *ImageAssets) Compress(ctx context.Context) (Map, error) {
 			continue
 		}
 		source, format, e := image.Decode(bytes.NewReader(original))
-		if e != nil {
+		if e != nil || format != "png" {
 			unlock()
 			continue
 		}

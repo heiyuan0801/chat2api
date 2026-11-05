@@ -65,8 +65,9 @@ NDJSON answer snapshots and then one final result, not OpenAI SSE. Snapshots
 preserve upstream replacement operations; a future protocol adapter will own
 public delta conversion and text annotation sanitization.
 
-`image` supports one Web generation with `gpt-image-2` or the three baseline 2.5
-compatibility names. It returns `conversation_id` and resolved signed asset URLs
+`image` supports one Web generation with `gpt-image-2`, the three baseline 2.5
+compatibility names, or `gpt-image-2.6-flare` / `gpt-image-2.6-sunburst`. The
+2.6 names use `auto`; they do not prove native 2.6 selection. It returns `conversation_id` and resolved signed asset URLs
 without downloading or storing image bytes. These URLs are sensitive output:
 do not paste probe output into logs, source files or a public report. Finding
 tool metadata or an input attachment is never enough to claim image success.
@@ -176,3 +177,13 @@ Image Asset service or a general-purpose downloader in the Go library.
   saved outside the repository. No Python/Vue application behavior is replaced.
 - No frontend build/browser acceptance, CI publication, remote push or deployment
   is claimed by the prototype checks.
+
+## SVG attachment delivery
+
+The native generation and configured-polling interfaces recognize an explicit
+SVG request in the Web prompt. They wait for a terminal current turn, resolve
+its SVG sandbox/file attachment through the existing editable-file download
+resolver and publish only that attachment, not an earlier raster preview. The
+control-plane ImageAssets owner validates and stores the bytes; see
+[output delivery](go-public-execution.md#gif-and-svg-output-delivery). This is
+not an official SVG parameter or exact Image 2.6 model selector.

@@ -147,6 +147,7 @@
                       selected-indicator="none"
                       block
                     />
+                    <p v-if="imageModelNotice" class="mt-2 text-xs leading-relaxed text-muted-foreground" role="status">{{ imageModelNotice }}</p>
                   </div>
                   <div class="studio-size-section">
                     <div class="studio-size-label">质量</div>
@@ -306,6 +307,7 @@ const props = defineProps<{
   imageForm: StudioImageForm
   chatModelOptions: string[]
   imageModelOptions: string[]
+  imageModelNotice?: string
   imageHighResolutionEnabled: boolean
   references: StudioReference[]
   isSending: boolean

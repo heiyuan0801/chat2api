@@ -55,6 +55,13 @@ func imageTaskAssets(raw Map) []Map {
 		if asset["url"] == "" && asset["b64_json"] == "" {
 			continue
 		}
+		mime := text(item["mime_type"])
+		if mime == "" && text(asset["b64_json"]) != "" {
+			mime = imageBase64MIME(text(asset["b64_json"]))
+		}
+		if mime != "" && mime != "image/png" {
+			asset["mime_type"] = mime
+		}
 		asset["width"] = imageTaskDimension(item["width"])
 		asset["height"] = imageTaskDimension(item["height"])
 		out = append(out, asset)

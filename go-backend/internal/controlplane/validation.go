@@ -251,6 +251,11 @@ func validateSchema(value any, schema, defs Map, loc []any) (any, []Map) {
 	return value, issues
 }
 func Validate(model string, body any) (Map, error) {
+	if model == "ImageGenerationTaskRequest" || model == "ImageGenerationRequest" {
+		if err := validateImageModelOptions(object(body)); err != nil {
+			return nil, err
+		}
+	}
 	schema, ok := baseline.Models[model]
 	if !ok {
 		schema, ok = stage4Models[model]

@@ -127,8 +127,8 @@ func (a *ImageAssets) localEntry(rel string, prior Map, data []byte) Map {
 	remote := boolean(prior["webdav"], false)
 	item["local"], item["webdav"], item["storage"] = true, remote, imageStorageName(true, remote)
 	if data != nil {
-		if w, h, e := imageDimensions(data); e == nil {
-			item["width"], item["height"] = w, h
+		if info, e := inspectImage(data); e == nil {
+			item["width"], item["height"] = info.Width, info.Height
 		}
 	}
 	return item
@@ -363,7 +363,11 @@ func (a *ImageAssets) Gallery(ctx context.Context, base, start, end string, page
 		if h := integer(item["height"], 0); h > 0 {
 			height = h
 		}
-		rows = append(rows, Map{"id": rel, "path": rel, "filename": galleryFilename(item), "url": item["url"], "thumbnail_url": strings.TrimRight(base, "/") + "/image-thumbnails/" + rel, "size_bytes": max(0, integer(item["size"], 0)), "created_at": text(item["created_at"]), "date": text(item["date"]), "media_type": "image", "expired": expired, "expires_at": expires, "expires_in_seconds": remaining, "tags": galleryTags(tags[rel]), "storage": storage, "local": local, "webdav": remote, "available": local || remote, "width": width, "height": height, "genbox_push": galleryGenboxState(item["genbox_push"])})
+		thumbnail := strings.TrimRight(base, "/") + "/image-thumbnails/" + rel
+		if strings.HasSuffix(rel, ".svg") || strings.HasSuffix(rel, ".gif") {
+			thumbnail = text(item["url"])
+		}
+		rows = append(rows, Map{"id": rel, "path": rel, "filename": galleryFilename(item), "url": item["url"], "thumbnail_url": thumbnail, "size_bytes": max(0, integer(item["size"], 0)), "created_at": text(item["created_at"]), "date": text(item["date"]), "media_type": "image", "expired": expired, "expires_at": expires, "expires_in_seconds": remaining, "tags": galleryTags(tags[rel]), "storage": storage, "local": local, "webdav": remote, "available": local || remote, "width": width, "height": height, "genbox_push": galleryGenboxState(item["genbox_push"])})
 	}
 	allTags := []string{}
 	for _, v := range tags {

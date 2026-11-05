@@ -283,7 +283,7 @@ func (c *Client) stream(ctx context.Context, path string, payload any, h http.He
 				return failure("consumer_error", "conversation")
 			}
 		}
-		if state.assistantTerminal || (image && state.toolTerminal && len(state.Pointers) > 0) {
+		if state.assistantTerminal || (image && !state.svgRequested && state.toolTerminal && len(state.Pointers) > 0) {
 			return errStreamDone
 		}
 		return nil
@@ -294,7 +294,7 @@ func (c *Client) stream(ctx context.Context, path string, payload any, h http.He
 	if err != nil {
 		return err
 	}
-	if !state.done && !state.assistantTerminal && !(image && state.toolTerminal && len(state.Pointers) > 0) {
+	if !state.done && !state.assistantTerminal && !(image && !state.svgRequested && state.toolTerminal && len(state.Pointers) > 0) {
 		return failure("incomplete_stream", "conversation")
 	}
 	return nil
@@ -411,7 +411,9 @@ func WebImageRoute(model string) (string, error) {
 	switch model {
 	case "", "gpt-image-2":
 		return "gpt-5-3", nil
-	case "gpt-image-2.5", "gpt-image-2.5-flare", "gpt-image-2.5-sunburst":
+	case "gpt-image-2.5", "gpt-image-2.5-flare", "gpt-image-2.5-sunburst",
+		"gpt-image-2.6-flare", "gpt-image-2.6-sunburst":
+		// Compatibility names, not verified native image model selectors.
 		return "auto", nil
 	}
 	return "", failure("unsupported_image_model", "validation")
@@ -483,7 +485,7 @@ func (c *Client) generateWebImage(ctx context.Context, input ImageRequest, progr
 	h = c.conversationHeaders(path, r)
 	h["x-conduit-token"] = []string{conduit}
 	h["x-oai-turn-trace-id"] = []string{uuid()}
-	state := &conversationState{imageMode: enhanced}
+	state := &conversationState{imageMode: enhanced, svgRequested: wantsSVG(prompt)}
 	reportProgress(progress, "starting_generation")
 	streamCtx, streamCancel := context.WithTimeout(ctx, c.cfg.StreamTimeout)
 	reportProgress(progress, "generating")
@@ -605,6 +607,9 @@ func (c *Client) pollImage(ctx context.Context, state *conversationState) error 
 }
 
 func (c *Client) resolveAssets(ctx context.Context, state *conversationState) ([]ImageAsset, error) {
+	if state.svgRequested {
+		return c.resolveSVG(ctx, state)
+	}
 	if len(state.Pointers) > 16 {
 		return nil, failure("too_many_images", "image_resolve")
 	}

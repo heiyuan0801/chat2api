@@ -27,7 +27,7 @@ func (s *Server) registerPublicImages() {
 						"usage":           publicTokenUsage(countPublicTextTokens(publicString(payload["prompt"]), publicString(payload["model"])), publicInputImageTokens(imageInputs(payload["images"])), 0, countOutputImageTokens([]Map{item}, publicString(payload["size"]), publicString(payload["quality"]))),
 						"_image_metadata": []Map{{"width": item["width"], "height": item["height"]}},
 					}
-					for _, field := range []string{"b64_json", "url"} {
+					for _, field := range []string{"b64_json", "url", "mime_type"} {
 						if text(item[field]) != "" {
 							event[field] = item[field]
 						}
@@ -116,6 +116,6 @@ func (s *Server) registerPublicImages() {
 		if err != nil {
 			return nil, problem(404, "image not found")
 		}
-		return &Download{Bytes: data, ContentType: media, Headers: map[string]string{"Access-Control-Allow-Origin": "*", "Cache-Control": "public, max-age=31536000, immutable"}}, nil
+		return &Download{Bytes: data, ContentType: media, Headers: imageResponseHeaders(media, map[string]string{"Access-Control-Allow-Origin": "*", "Cache-Control": "public, max-age=31536000, immutable"})}, nil
 	})
 }

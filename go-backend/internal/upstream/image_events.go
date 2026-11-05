@@ -73,7 +73,7 @@ func numeric(value any) float64 {
 	}
 	return 0
 }
-func currentTurnMessages(doc map[string]any) []map[string]any {
+func currentTurnWithUser(doc map[string]any) []map[string]any {
 	mapping := object(doc["mapping"])
 	values := []map[string]any{}
 	if id := text(doc["current_node"]); id != "" && object(mapping[id]) != nil {
@@ -114,10 +114,18 @@ func currentTurnMessages(doc map[string]any) []map[string]any {
 	start := 0
 	for i, m := range values {
 		if text(object(m["author"])["role"]) == "user" {
-			start = i + 1
+			start = i
 		}
 	}
 	return values[start:]
+}
+
+func currentTurnMessages(doc map[string]any) []map[string]any {
+	values := currentTurnWithUser(doc)
+	if len(values) > 0 && text(object(values[0]["author"])["role"]) == "user" {
+		return values[1:]
+	}
+	return values
 }
 
 func imageToolArguments(value string) bool {

@@ -32,6 +32,11 @@ var publicSpec = func() struct {
 }()
 
 func validatePublic(model string, raw any) (Map, error) {
+	if model == "ImageGenerationRequest" || model == "ImageGenerationTaskRequest" || model == "ChatCompletionRequest" || model == "ResponseCreateRequest" {
+		if err := validateImageModelOptions(object(raw)); err != nil {
+			return nil, err
+		}
+	}
 	schema, ok := publicSpec.Models[model]
 	if !ok {
 		return Validate(model, raw)

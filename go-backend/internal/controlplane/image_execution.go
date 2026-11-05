@@ -309,6 +309,27 @@ func imagePoolRequest(model string) (PoolRequest, string, error) {
 	sort.Strings(models)
 	return r, "", imageProblem("unsupported_model", 0, "unsupported image model,supported models: "+strings.Join(models, ", "), nil)
 }
+
+// Validate before normalization can discard unsupported Image API controls.
+func validateImageModelOptions(payload Map) error {
+	if !isImage26Model(text(payload["model"])) {
+		return nil
+	}
+	for _, key := range []string{"complexity", "markup", "output_format", "output_compression", "background", "frame_count", "frame_duration_ms", "input_fidelity"} {
+		if value, ok := payload[key]; ok && value != nil {
+			return problem(400, key+" is not supported by the ChatGPT Web compatibility route; Image 2.6 names do not select an exact upstream model")
+		}
+	}
+	if quality, ok := payload["quality"]; ok && quality != nil {
+		switch quality {
+		case "", "auto", "low", "medium", "high", "xhigh", "max":
+		default:
+			return problem(400, "quality must be auto, low, medium, high, xhigh or max")
+		}
+	}
+	return nil
+}
+
 func imageFailureRank(code string) int {
 	switch code {
 	case "auth_invalid":
@@ -333,6 +354,9 @@ func (e *NativeImageExecutor) Execute(parent context.Context, payload Map, progr
 		return nil, context.Canceled
 	}
 	defer e.active.Done()
+	if err := validateImageModelOptions(payload); err != nil {
+		return nil, err
+	}
 	s := e.server
 	settings, err := s.Settings.runtimeValues(parent)
 	if err != nil {
@@ -617,7 +641,8 @@ func (e *NativeImageExecutor) one(ctx context.Context, request upstream.ImageReq
 		}
 		failure.Details["image_attempts"] = attempts
 		last = failure
-		if failure.Status == 400 || failure.Code == "task_interrupted" || (consumed && failure.Code == "image_download_failed") || (upstreamResult.ConversationID != "" && failure.Code == "image_poll_timeout") {
+		attachmentFailure := upstreamResult.ConversationID != "" && errors.As(err, &transportErr) && transportErr.Stage == "svg_attachment"
+		if attachmentFailure || failure.Status == 400 || failure.Code == "task_interrupted" || (consumed && failure.Code == "image_download_failed") || (upstreamResult.ConversationID != "" && failure.Code == "image_poll_timeout") {
 			return nil, failure
 		}
 	}
@@ -651,6 +676,9 @@ func (e *NativeImageExecutor) format(ctx context.Context, result upstream.ImageR
 			return nil, imageProblem("image_download_failed", 0, "", nil)
 		}
 		item := Map{"revised_prompt": text(payload["prompt"]), "width": stored.Width, "height": stored.Height}
+		if stored.MIME != "image/png" {
+			item["mime_type"] = stored.MIME
+		}
 		if format != "b64_json" {
 			item["url"] = stored.URL
 		} else {

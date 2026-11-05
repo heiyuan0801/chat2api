@@ -5,7 +5,15 @@ import (
 	"strings"
 )
 
-var webImageModels = []string{"gpt-image-2", "gpt-image-2.5", "gpt-image-2.5-flare", "gpt-image-2.5-sunburst"}
+var webImageModels = []string{"gpt-image-2", "gpt-image-2.5", "gpt-image-2.5-flare", "gpt-image-2.5-sunburst", "gpt-image-2.6-flare", "gpt-image-2.6-sunburst"}
+
+func isImage26Model(model string) bool {
+	switch strings.ToLower(strings.TrimSpace(model)) {
+	case "gpt-image-2.6-flare", "gpt-image-2.6-sunburst":
+		return true
+	}
+	return false
+}
 
 func (s *Server) modelCatalog(ctx context.Context) (Map, error) {
 	raw, e := s.DB.Document(ctx, "system_settings")
@@ -82,6 +90,15 @@ func (s *Server) modelCatalog(ctx context.Context) (Map, error) {
 		return nil, e
 	}
 	payload := Map{"chat_models": chat, "image_models": images, "defaults": Map{"chat_model": chatDefault, "image_model": imageDefault}, "capabilities": Map{"image_upscale": values["image_upscale_enabled"], "high_resolution_image_models": high}, "source": Map{"chat": chatSource, "image": imageSource}}
+	notices := Map{}
+	for _, name := range images {
+		if isImage26Model(name) {
+			notices[name] = "当前仅兼容此模型名称，实际模型由 ChatGPT 自动选择，无法保证使用 Image 2.6 或区分 Flare / Sunburst。暂不支持 complexity、SVG/GIF 等参数。"
+		}
+	}
+	if len(notices) > 0 {
+		object(payload["capabilities"])["image_model_notices"] = notices
+	}
 	out := copyMap(payload)
 	out["object"], out["schema_version"], out["generated_at"], out["revision"], out["all_models"], out["openai_models_endpoint"] = "model_catalog", 1, generated(s.now()), digest(canonical(payload))[:16], unique(append(append([]string{}, chat...), images...)), "/v1/models"
 	return out, nil

@@ -29,6 +29,18 @@ var editableID = regexp.MustCompile(`\b(file[-_][A-Za-z0-9_-]+)\b`)
 var editablePointer = regexp.MustCompile(`(?:file-service|sediment)://([A-Za-z0-9_-]+)`)
 var editablePPTPath = regexp.MustCompile(`(?i)(?:sandbox:)?(/mnt/data/[^\s"'\)\]]+\.(?:pptx?|zip))`)
 var editablePSDPath = regexp.MustCompile(`(?i)(?:sandbox:)?(/mnt/data/[^\s"'\)\]]+\.(?:psd|zip))`)
+var editableSVGPath = regexp.MustCompile(`(?i)(?:sandbox:)?(/mnt/data/[^\s"'\)\]]+\.svg)`)
+
+func editablePathPattern(kind string) *regexp.Regexp {
+	switch kind {
+	case "psd":
+		return editablePSDPath
+	case "svg":
+		return editableSVGPath
+	default:
+		return editablePPTPath
+	}
+}
 
 func editableFileID(value string) string {
 	for _, m := range editableID.FindAllStringSubmatch(value, -1) {
@@ -39,10 +51,7 @@ func editableFileID(value string) string {
 	return ""
 }
 func editablePath(value string, kind string) string {
-	re := editablePPTPath
-	if kind == "psd" {
-		re = editablePSDPath
-	}
+	re := editablePathPattern(kind)
 	if m := re.FindStringSubmatch(value); len(m) > 1 {
 		return m[1]
 	}
@@ -55,6 +64,9 @@ func editableExtension(kind, mimeType string) string {
 	}
 	if kind == "psd" && (strings.Contains(mimeType, "photoshop")) {
 		return ".psd"
+	}
+	if kind == "svg" && mimeType == "image/svg+xml" {
+		return ".svg"
 	}
 	if kind == "ppt" && (strings.Contains(mimeType, "presentationml.presentation") || strings.Contains(mimeType, "ms-powerpoint")) {
 		return ".pptx"
@@ -208,10 +220,7 @@ func editableTargets(doc map[string]any, kind string) []editableArtifact {
 			}
 			merge(key, a)
 		}, nil)
-		re := editablePPTPath
-		if kind == "psd" {
-			re = editablePSDPath
-		}
+		re := editablePathPattern(kind)
 		for _, match := range re.FindAllStringSubmatch(searchMessageText(m), -1) {
 			p := match[1]
 			merge(p, editableArtifact{Name: path.Base(p), SandboxPath: p, MessageID: messageID, Created: created})
@@ -240,10 +249,16 @@ func editableTargets(doc map[string]any, kind string) []editableArtifact {
 		if kind == "psd" && (strings.HasSuffix(strings.ToLower(a.Name), ".psd") || strings.HasSuffix(strings.ToLower(a.SandboxPath), ".psd")) {
 			isPrimary = true
 		}
+		if kind == "svg" && (strings.HasSuffix(strings.ToLower(a.Name), ".svg") || strings.HasSuffix(strings.ToLower(a.SandboxPath), ".svg")) {
+			isPrimary = true
+		}
 		if primary == nil && isPrimary {
 			copy := a
 			primary = &copy
 		}
+	}
+	if kind == "svg" && primary != nil {
+		return []editableArtifact{*primary}
 	}
 	if primary != nil && archive != nil {
 		return []editableArtifact{*primary, *archive}

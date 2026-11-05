@@ -106,6 +106,7 @@
             :image-form="imageForm"
             :chat-model-options="chatModelOptions"
             :image-model-options="imageModelOptions"
+            :image-model-notice="modelFormRuntime.imageModelNotice.value"
             :image-high-resolution-enabled="imageHighResolutionEnabled"
             :references="referenceRuntime.references.value"
             :is-sending="isSending"

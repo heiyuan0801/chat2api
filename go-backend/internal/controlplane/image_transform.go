@@ -191,10 +191,11 @@ var exactImageSize = regexp.MustCompile(`(?i)^(\d{2,5})\s*x\s*(\d{2,5})$`)
 var imageUpscaleSlot = make(chan struct{}, 1)
 
 func resizeGeneratedImage(ctx context.Context, data []byte, size string, enabled bool, engine string) ([]byte, error) {
-	w, h, e := imageDimensions(data)
-	if e != nil {
+	info, e := inspectImage(data)
+	if e != nil || info.Extension == ".gif" || info.Extension == ".svg" {
 		return data, nil
 	}
+	w, h := info.Width, info.Height
 	if !enabled {
 		return data, nil
 	}

@@ -107,7 +107,7 @@ func (s *Server) testAccount(ctx context.Context, r *http.Request, payload, iden
 				if value := text(item["url"]); value != "" {
 					urls = append(urls, value)
 				} else if value := text(item["b64_json"]); value != "" {
-					urls = append(urls, "data:image/png;base64,"+value)
+					urls = append(urls, "data:"+imageBase64MIME(value)+";base64,"+value)
 				}
 			}
 		}

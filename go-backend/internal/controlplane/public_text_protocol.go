@@ -325,7 +325,7 @@ func publicImageContent(result Map) string {
 		source := text(defaultValue(item["url"], item["image_url"]))
 		if source == "" {
 			if b64 := text(item["b64_json"]); b64 != "" {
-				source = "data:image/png;base64," + b64
+				source = "data:" + imageBase64MIME(b64) + ";base64," + b64
 			}
 		}
 		if source != "" {

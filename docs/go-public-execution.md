@@ -95,6 +95,36 @@ pixels (64 MP, at most 32768 per dimension), resize intermediates, input counts
 and encoded bodies are bounded. Output image bytes are saved even when returned
 as base64.
 
+## GIF and SVG output delivery
+
+Go ImageAssets validates actual bytes and preserves PNG, JPEG, GIF, WebP and
+passive SVG files with their real suffix and MIME. Existing GIF bytes under old
+PNG paths stay readable; maintenance compression skips non-PNG content. GIF and
+SVG bypass raster upscaling so animation and vector paths survive unchanged.
+Non-PNG results carry optional `mime_type` in JSON, SSE and Image Task assets;
+chat data URLs and Vue task previews use the actual MIME. Gallery previews use
+the original GIF/SVG, and direct, admin, ZIP and WebDAV delivery retain bytes.
+Browser downloads correct legacy/default image suffixes from the response MIME.
+
+For ChatGPT Web requests whose prompt explicitly mentions `SVG`, the adapter
+waits for a completed assistant turn and extracts its SVG attachment instead of
+returning an earlier PNG preview. Current-turn sandbox links and typed file
+metadata use the existing authenticated download resolver; private credentials
+never accompany third-party URLs. Missing attachments and download-resolution
+failures do not trigger another generation, and a poll timeout
+keeps the original conversation/account for read-only recovery. This is a
+prompt-driven attachment flow, possibly produced by the upstream code tool;
+it does not prove native Image 2.6 vector output. Official `output_format`,
+`frame_count` and related unsupported controls are still rejected for 2.6 names.
+
+SVG is an output format, not a supported edit-reference input. Files are limited
+to 2 MiB, 50,000 XML elements and 64 levels, with bounded positive dimensions.
+Only passive SVG shapes, text, gradients, clipping and local fragment references
+are accepted. Scripts, event handlers, embedded raster images, foreign content,
+external references, DTDs and CSS style elements/attributes are rejected rather
+than silently altered. SVG reads are revalidated and return `nosniff` and a
+sandboxed Content Security Policy. No files or account data are migrated.
+
 ## Durable ownership
 
 | Owner | Data and behavior |
@@ -139,6 +169,32 @@ Request credentials and image input bytes are excluded. Shutdown closes call adm
 for final record writes before database closure; write/shutdown failures are
 reported. Logs/metrics queries, retained aggregate handling and live monitoring
 remain stage 4.
+
+## Image 2.6 compatibility boundary
+
+The default Model Catalog and public image validation accept
+`gpt-image-2.6-flare` and `gpt-image-2.6-sunburst`. These are compatibility names
+for ChatGPT Web `auto`, sharing the existing route's account evidence; they do
+not select or attest a native 2.6 model. The unqualified `gpt-image-2.6` is not an
+advertised alias. Explicit configured catalogs and the default `gpt-image-2`
+remain unchanged. Codex continues to use its existing image model.
+
+`capabilities.image_model_notices` is an optional model-to-message map on
+`GET /api/model-catalog`. Studio displays the selected model's notice. The
+[official prompting guide](https://developers.openai.com/api/docs/guides/image-prompting)
+and [generation guide](https://developers.openai.com/api/docs/guides/image-generation)
+describe the official Images API, not this gateway's Web conversation protocol.
+
+For these two names, explicit non-null `complexity`, `markup`, `background`,
+`output_format`, `output_compression`, `frame_count`, `frame_duration_ms` and
+`input_fidelity` return HTTP 400 before account execution. In particular, no
+SVG/GIF result or exact complexity control is guaranteed by those names; the
+prompt-driven attachment behavior above is a separate path. JSON, multipart and
+asynchronous task entry points apply the same rule before dropping unknown
+fields. `quality` accepts `auto`, `low`, `medium`, `high`, `xhigh` and `max`;
+it remains a Web prompt hint rather than an enforced rendering control.
+Existing URL/base64, streaming, edit references and task delivery are reused.
+Actual upstream 2.6 identity and precise variant selection remain unverified.
 
 ## Isolated use
 

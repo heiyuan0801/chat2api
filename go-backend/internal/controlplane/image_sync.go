@@ -45,7 +45,17 @@ func (a *ImageAssets) webdavRequest(ctx context.Context, client *http.Client, se
 	if text(settings["webdav_username"]) != "" || text(settings["webdav_password"]) != "" {
 		req.SetBasicAuth(text(settings["webdav_username"]), text(settings["webdav_password"]))
 	}
-	req.Header.Set("Content-Type", "image/png")
+	if method == "PUT" {
+		if rel == ".chatgpt2api_webdav_test.txt" {
+			req.Header.Set("Content-Type", "text/plain; charset=utf-8")
+		} else {
+			info, err := inspectImage(data)
+			if err != nil {
+				return 0, err
+			}
+			req.Header.Set("Content-Type", info.MIME)
+		}
+	}
 	resp, e := client.Do(req)
 	if e != nil {
 		return 0, problem(400, "WebDAV request failed")

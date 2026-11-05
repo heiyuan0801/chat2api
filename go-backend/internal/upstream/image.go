@@ -284,19 +284,19 @@ func (c *Client) pollImageConfigured(parent context.Context, state *conversation
 		return failure("missing_conversation_id", "image_poll")
 	}
 	check, settle := boolDefault(c.cfg.CheckBeforeHit, true), boolDefault(c.cfg.SettleEnabled, true)
-	if len(state.Pointers) > 0 && !check && !settle {
+	if state.hasImageResult() && !check && !settle {
 		return nil
 	}
 	ctx, cancel := context.WithTimeout(parent, c.cfg.PollTimeout)
 	defer cancel()
 	initial := c.cfg.PollInitialWait
 	initialMetric := "poll_sleep_ms"
-	if len(state.Pointers) > 0 && settle {
+	if state.hasImageResult() && settle {
 		initial = c.cfg.SettleTime
 		initialMetric = "poll_settle_ms"
 	}
 	if e := c.waitImageTiming(ctx, initial, initialMetric); e != nil {
-		if len(state.Pointers) > 0 {
+		if state.hasImageResult() {
 			return nil
 		}
 		return pollDeadline(parent, ctx)
@@ -310,6 +310,18 @@ func (c *Client) pollImageConfigured(parent context.Context, state *conversation
 		conversation, e := c.imagePollJSON(ctx, path, "image_poll", "poll_conversation_ms")
 		var convErr error
 		if e == nil {
+			if svg, svgErr := state.collectSVG(conversation); svg {
+				if svgErr != nil {
+					return svgErr
+				}
+				if state.hasImageResult() {
+					return nil
+				}
+				if err := c.waitImageTiming(ctx, c.cfg.PollInterval, "poll_sleep_ms"); err != nil {
+					break
+				}
+				continue
+			}
 			// Only the current turn can commit outputs; stale branches remain excluded.
 			for _, m := range currentTurnMessages(conversation) {
 				if err := state.pollMessage(m); err != nil {
@@ -320,7 +332,7 @@ func (c *Client) pollImageConfigured(parent context.Context, state *conversation
 		// A committed conversation result needs no diagnostic task lookup.
 		// Pending or unavailable conversations still consult tasks, including
 		// task-only outputs and structured failures.
-		if len(state.Pointers) == 0 {
+		if len(state.Pointers) == 0 && !state.svgRequested {
 			// Task probes are diagnostic. A transient probe failure must not hide a
 			// committed result in the conversation document.
 			tasksPath := "/backend-api/tasks"
@@ -330,7 +342,7 @@ func (c *Client) pollImageConfigured(parent context.Context, state *conversation
 			if e != nil {
 				var controlled *Error
 				if errors.As(e, &controlled) && controlled.Status == 401 {
-					if len(state.Pointers) > 0 {
+					if state.hasImageResult() {
 						return nil
 					}
 					return e
@@ -357,7 +369,7 @@ func (c *Client) pollImageConfigured(parent context.Context, state *conversation
 		}
 
 		if e != nil {
-			if len(state.Pointers) > 0 {
+			if state.hasImageResult() {
 				return nil
 			}
 			if ctx.Err() != nil {
@@ -376,7 +388,7 @@ func (c *Client) pollImageConfigured(parent context.Context, state *conversation
 			}
 			continue
 		}
-		if len(state.Pointers) > 0 {
+		if state.hasImageResult() {
 			if !check || samePointers(previous, state.Pointers) || !settle {
 				return nil
 			}
@@ -400,7 +412,7 @@ func (c *Client) pollImageConfigured(parent context.Context, state *conversation
 			break
 		}
 	}
-	if len(state.Pointers) > 0 {
+	if state.hasImageResult() {
 		return nil
 	}
 	return pollDeadline(parent, ctx)

@@ -44,17 +44,23 @@ function localImagePathFromUrl(url: string) {
 
 function filenameWithExtension(filename: string, blob: Blob, sourceUrl: string) {
   const cleanName = cleanString(filename) || 'image'
-  if (/\.[a-z0-9]{2,5}$/i.test(cleanName)) return cleanName
-
   const typeExt = blob.type.includes('jpeg')
     ? 'jpg'
     : blob.type.includes('webp')
       ? 'webp'
       : blob.type.includes('gif')
         ? 'gif'
-        : blob.type.includes('png')
-          ? 'png'
-          : ''
+        : blob.type.includes('svg+xml')
+          ? 'svg'
+          : blob.type.includes('png')
+            ? 'png'
+            : ''
+  // Generated images and older gallery paths may have a PNG filename even
+  // when their bytes are GIF or SVG. The response MIME owns the saved suffix.
+  if (typeExt && /\.(png|jpe?g|webp|gif|svg)$/i.test(cleanName)) {
+    return cleanName.replace(/\.(png|jpe?g|webp|gif|svg)$/i, `.${typeExt}`)
+  }
+  if (/\.[a-z0-9]{2,5}$/i.test(cleanName)) return cleanName
   if (typeExt) return `${cleanName}.${typeExt}`
 
   try {

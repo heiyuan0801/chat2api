@@ -224,6 +224,9 @@ func (s *Server) readImageReferences(ctx context.Context, value any) ([]upstream
 	return inputs, nil
 }
 func parseEditFields(fields Map) (Map, error) {
+	if err := validateImageModelOptions(fields); err != nil {
+		return nil, err
+	}
 	prompt := text(fields["prompt"])
 	if prompt == "" {
 		return nil, problem(400, "prompt is required")

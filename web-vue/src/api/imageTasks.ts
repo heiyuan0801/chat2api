@@ -7,6 +7,7 @@ export interface ImageTaskAsset {
   url: string
   path: string
   b64_json: string
+  mime_type?: string
   revised_prompt: string
   width: number | null
   height: number | null
@@ -257,7 +258,12 @@ function parseTaskAsset(value: unknown, path: string): ImageTaskAsset {
   const width = expectNullableInteger(asset.width, `${path}.width`)
   const height = expectNullableInteger(asset.height, `${path}.height`)
   if (width === 0 || height === 0) imageTaskContractError(path, 'positive dimensions or null')
+  const mime = asset.mime_type === undefined ? undefined : expectString(asset.mime_type, `${path}.mime_type`)
+  if (mime !== undefined && !['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml'].includes(mime)) {
+    imageTaskContractError(`${path}.mime_type`, 'supported image MIME')
+  }
   return {
+    ...(mime === undefined ? {} : { mime_type: mime }),
     url: expectString(asset.url, `${path}.url`),
     path: expectString(asset.path, `${path}.path`),
     b64_json: expectString(asset.b64_json, `${path}.b64_json`),
@@ -362,7 +368,7 @@ export function imageAssetUrl(asset: ImageTaskAsset) {
   const url = cleanString(asset.url)
   if (url) return url
   const base64 = cleanString(asset.b64_json)
-  return base64 ? `data:image/png;base64,${base64}` : ''
+  return base64 ? `data:${asset.mime_type || 'image/png'};base64,${base64}` : ''
 }
 
 export const imageTasksApi = {

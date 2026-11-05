@@ -31,8 +31,8 @@ const maxImageBytes = 50 << 20
 const maxImagePixels = 64 << 20
 
 type StoredImage struct {
-	Path, URL, Storage string
-	Width, Height      int
+	Path, URL, Storage, MIME string
+	Width, Height            int
 }
 
 // ImageAssets is the sole native save/read owner. Destructive gallery operations
@@ -88,7 +88,7 @@ func imageRelative(raw string) (string, error) {
 	}
 	rel := path.Clean(raw)
 	switch strings.ToLower(path.Ext(rel)) {
-	case ".png", ".jpg", ".jpeg", ".webp":
+	case ".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg":
 	default:
 		return "", os.ErrNotExist
 	}
@@ -124,14 +124,14 @@ func (a *ImageAssets) Save(ctx context.Context, data []byte, base string) (Store
 	if e := ctx.Err(); e != nil {
 		return out, e
 	}
-	width, height, e := imageDimensions(data)
+	info, e := inspectImage(data)
 	if e != nil {
 		return out, e
 	}
 	now := a.server.now()
 	beijing := now.In(time.FixedZone("Asia/Shanghai", 8*3600))
 	hash := md5.Sum(data)
-	rel := fmt.Sprintf("%s/%d_%s.png", beijing.Format("2006/01/02"), now.Unix(), hex.EncodeToString(hash[:]))
+	rel := fmt.Sprintf("%s/%d_%s%s", beijing.Format("2006/01/02"), now.Unix(), hex.EncodeToString(hash[:]), info.Extension)
 	stripe := sha256.Sum256([]byte(rel))
 	unlock, e := filepersist.Lock(ctx, a.index+".item-locks/"+hex.EncodeToString(stripe[:1])+".lock")
 	if e != nil {
@@ -177,7 +177,7 @@ func (a *ImageAssets) Save(ctx context.Context, data []byte, base string) (Store
 		}
 		remote = true
 	}
-	entry := Map{"rel": rel, "path": rel, "name": path.Base(rel), "date": beijing.Format("2006-01-02"), "size": len(data), "created_at": beijing.Format("2006-01-02 15:04:05"), "storage": mode, "local": local, "webdav": remote, "remote_url": remoteURL, "generation": id(16), "width": width, "height": height}
+	entry := Map{"rel": rel, "path": rel, "name": path.Base(rel), "date": beijing.Format("2006-01-02"), "size": len(data), "created_at": beijing.Format("2006-01-02 15:04:05"), "storage": mode, "local": local, "webdav": remote, "remote_url": remoteURL, "generation": id(16), "width": info.Width, "height": info.Height}
 	catalogUnlock, e := filepersist.Lock(commitCtx, a.index+".lock")
 	if e != nil {
 		return out, e
@@ -217,7 +217,7 @@ func (a *ImageAssets) Save(ctx context.Context, data []byte, base string) (Store
 		}
 		public = strings.TrimRight(base, "/") + "/images"
 	}
-	return StoredImage{Path: rel, URL: public + "/" + rel, Storage: mode, Width: width, Height: height}, nil
+	return StoredImage{Path: rel, URL: public + "/" + rel, Storage: mode, MIME: info.MIME, Width: info.Width, Height: info.Height}, nil
 }
 func (a *ImageAssets) Read(ctx context.Context, raw string) ([]byte, string, error) {
 	rel, e := imageRelative(raw)
@@ -263,7 +263,11 @@ func (a *ImageAssets) Read(ctx context.Context, raw string) ([]byte, string, err
 	if e != nil || len(data) == 0 || len(data) > maxImageBytes {
 		return nil, "", os.ErrNotExist
 	}
-	return data, http.DetectContentType(data), nil
+	info, err := inspectImage(data)
+	if err != nil {
+		return nil, "", os.ErrNotExist
+	}
+	return data, info.MIME, nil
 }
 func (a *ImageAssets) remoteURL(settings Map, rel string) (string, error) {
 	base, e := url.Parse(text(settings["webdav_url"]))
